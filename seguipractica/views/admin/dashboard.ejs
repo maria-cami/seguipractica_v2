@@ -1,0 +1,186 @@
+<%- include('../partials/layout-top') %>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F465;</div>
+    <div class="stat-label">Total Estudiantes</div>
+    <div class="stat-value"><%= total %></div>
+    <div class="stat-sub">Periodo 2025-1</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F4D8;</div>
+    <div class="stat-label">En Proceso</div>
+    <div class="stat-value text-blue"><%= enProceso %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x2705;</div>
+    <div class="stat-label">Finalizados</div>
+    <div class="stat-value text-green"><%= finaliz %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x26A0;</div>
+    <div class="stat-label">Pend. Documentos</div>
+    <div class="stat-value text-yellow"><%= pendDocs %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x274C;</div>
+    <div class="stat-label">Canceladas</div>
+    <div class="stat-value text-red"><%= cancelada %></div>
+  </div>
+</div>
+
+<!-- ESTRUCTURA UNIVERSITARIA -->
+<div class="card" style="margin-bottom:18px">
+  <div class="card-header">
+    <h3 class="card-title">&#x1F3EB; Estructura Universitaria — Practicas por Programa</h3>
+  </div>
+  <div class="card-body" style="padding:0">
+    <% if (facultades && facultades.length > 0) { %>
+      <% for (var fi = 0; fi < facultades.length; fi++) { %>
+        <% var fac = facultades[fi]; %>
+        <div style="padding:14px 18px;border-bottom:1px solid var(--n100)">
+
+          <!-- FACULTAD -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <span style="font-size:18px">&#x1F3EB;</span>
+            <span style="font-size:14px;font-weight:700;color:var(--c0)"><%= fac.nombre %></span>
+            <span class="badge badge-gray"><%= fac.codigo %></span>
+          </div>
+
+          <!-- PROGRAMAS -->
+          <% for (var pi2 = 0; pi2 < programas.length; pi2++) { %>
+            <% var prog = programas[pi2]; %>
+            <% if (prog.facultad_id === fac.id) { %>
+              <div style="margin-left:20px;margin-bottom:10px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <span style="font-size:15px">&#x1F4BB;</span>
+                  <span style="font-size:13px;font-weight:600;color:var(--n700)"><%= prog.nombre %></span>
+                  <span class="badge badge-blue"><%= prog.total_practicas %> semestres</span>
+                </div>
+
+                <!-- SEMESTRES -->
+                <div style="display:flex;gap:10px;margin-left:22px;flex-wrap:wrap">
+                  <% for (var si2 = 0; si2 < semestres.length; si2++) { %>
+                    <% var sem = semestres[si2]; %>
+                    <% if (sem.programa_id === prog.id) { %>
+                      <div style="background:var(--n50);border:1px solid var(--n200);border-radius:10px;padding:10px 16px;min-width:170px">
+                        <div style="font-size:12px;font-weight:700;color:var(--c3);margin-bottom:3px">
+                          &#x1F4CB; <%= sem.nombre %>
+                        </div>
+                        <div style="font-size:11px;color:var(--n500);margin-bottom:6px">
+                          <%= sem.descripcion %>
+                        </div>
+                        <div style="font-size:20px;font-weight:700;color:var(--c0)">
+                          <%= practicasPorSemestre[sem.nombre] || 0 %>
+                          <span style="font-size:11px;font-weight:400;color:var(--n400)">estudiante(s)</span>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state">Sin facultades registradas</div>
+    <% } %>
+  </div>
+</div>
+
+<div class="grid-2">
+  <!-- CUMPLIMIENTO -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Cumplimiento de Requisitos</h3>
+    </div>
+    <div class="card-body">
+      <% var reqs = [
+        { label: 'Campus Virtual',      val: cumplimiento.campus },
+        { label: 'Seguridad Social',    val: cumplimiento.segSocial },
+        { label: 'Certificado EPS',     val: cumplimiento.epsCert },
+        { label: 'Certificado ARL',     val: cumplimiento.arlCert },
+        { label: 'Matriculado',         val: cumplimiento.matriculado },
+        { label: 'Acta de Compromisos', val: cumplimiento.acta },
+        { label: 'Seguimiento 1',       val: cumplimiento.seg1 },
+        { label: 'Seguimiento 2',       val: cumplimiento.seg2 },
+      ]; %>
+      <% for (var i = 0; i < reqs.length; i++) { %>
+        <% var pct = total > 0 ? Math.round(reqs[i].val / total * 100) : 0; %>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span><%= reqs[i].label %></span>
+            <span><strong><%= reqs[i].val %>/<%= total %></strong></span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width:<%= String(pct) + '%' %>"></div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div>
+    <!-- ESTADOS -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><h3 class="card-title">Estado de Practicas</h3></div>
+      <div class="card-body">
+        <div class="estado-list">
+          <div class="estado-item"><span class="badge badge-blue">En Proceso</span><strong><%= enProceso %></strong></div>
+          <div class="estado-item"><span class="badge badge-green">Finalizada</span><strong><%= finaliz %></strong></div>
+          <div class="estado-item"><span class="badge badge-yellow">Pend. Docs</span><strong><%= pendDocs %></strong></div>
+          <div class="estado-item"><span class="badge badge-red">Cancelada</span><strong><%= cancelada %></strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCENTES -->
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Docentes</h3></div>
+      <div class="card-body">
+        <% for (var j = 0; j < docentes.length; j++) { %>
+          <div class="docente-item">
+            <div class="docente-av"><%= docentes[j].nombres[0] %><%= docentes[j].apellidos[0] %></div>
+            <span class="docente-name"><%= docentes[j].nombres %> <%= docentes[j].apellidos %></span>
+            <span class="badge badge-gray"><%= docentes[j].total_estudiantes %> est.</span>
+          </div>
+        <% } %>
+        <% if (docentes.length === 0) { %>
+          <p class="empty-text">Sin docentes registrados</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALERTAS -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">&#x26A0; Documentacion Incompleta</h3>
+  </div>
+  <div class="card-body card-body-flush">
+    <% if (alertas.length > 0) { %>
+      <% for (var k = 0; k < alertas.length; k++) { %>
+        <% var al = alertas[k]; %>
+        <div class="alert-row">
+          <div class="alert-av"><%= al.nombres[0] %><%= al.apellidos[0] %></div>
+          <div class="alert-info">
+            <div class="alert-name"><%= al.nombres %> <%= al.apellidos %></div>
+            <div class="alert-missing">
+              Falta:
+              <% if (!al.req_eps_cert) { %><span class="tag">Cert. EPS</span><% } %>
+              <% if (!al.req_arl_cert) { %><span class="tag">Cert. ARL</span><% } %>
+              <% if (!al.req_acta) { %><span class="tag">Acta</span><% } %>
+            </div>
+          </div>
+          <a href="/admin/estudiantes/<%= al.id %>" class="btn btn-sm btn-secondary">Ver</a>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state">&#x1F389; No hay alertas pendientes</div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>

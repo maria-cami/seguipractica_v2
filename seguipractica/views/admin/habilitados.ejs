@@ -1,0 +1,221 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Estudiantes Habilitados</h2>
+    <p class="page-sub">Solo los estudiantes en esta lista pueden crear cuenta. Requisitos: TDS006 aprobado y minimo 46 creditos.</p>
+  </div>
+  <button onclick="document.getElementById('modal-crear').style.display='flex'" class="btn btn-primary btn-sm">
+    + Agregar Estudiante
+  </button>
+</div>
+
+<!-- STATS -->
+<div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+  <div class="stat-card"><div class="stat-icon">&#x1F465;</div><div class="stat-label">Total en lista</div><div class="stat-val"><%= total %></div></div>
+  <div class="stat-card"><div class="stat-icon">&#x2705;</div><div class="stat-label">Habilitados</div><div class="stat-val text-green"><%= habilitados %></div></div>
+  <div class="stat-card"><div class="stat-icon">&#x274C;</div><div class="stat-label">No habilitados</div><div class="stat-val text-red"><%= pendientes %></div></div>
+  <div class="stat-card"><div class="stat-icon">&#x1F4DD;</div><div class="stat-label">Ya registrados</div><div class="stat-val text-blue"><%= registrados %></div></div>
+</div>
+
+<!-- TABLA -->
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Cedula</th>
+          <th>Creditos</th>
+          <th>TDS006</th>
+          <th>Habilitado</th>
+          <th>Registrado</th>
+          <th>Observacion</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (lista.length > 0) { %>
+          <% for (var i = 0; i < lista.length; i++) { %>
+            <% var e = lista[i]; %>
+            <tr>
+              <td>
+                <div class="td-user">
+                  <div class="td-av"><%= e.nombres[0] %><%= e.apellidos[0] %></div>
+                  <span class="td-name"><%= e.apellidos %> <%= e.nombres %></span>
+                </div>
+              </td>
+              <td class="mono"><%= e.cedula %></td>
+              <td>
+                <span class="badge <%= e.creditos >= 46 ? 'badge-green' : 'badge-red' %>">
+                  <%= e.creditos %> / 46
+                </span>
+              </td>
+              <td>
+                <% if (e.tds006) { %>
+                  <span class="badge badge-green">&#x2713; Aprobado</span>
+                <% } else { %>
+                  <span class="badge badge-red">&#x2717; Pendiente</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (e.habilitado) { %>
+                  <span class="badge badge-green">&#x2705; Si</span>
+                <% } else { %>
+                  <span class="badge badge-red">&#x274C; No</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (e.ya_registrado) { %>
+                  <span class="badge badge-blue">&#x1F4DD; Si</span>
+                <% } else { %>
+                  <span class="badge badge-gray">No aun</span>
+                <% } %>
+              </td>
+              <td class="text-sm" style="max-width:220px;color:var(--n500)">
+                <%= e.observacion || '&#x2014;' %>
+              </td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn btn-sm btn-secondary"
+                    onclick="abrirEditar('<%= e.id %>','<%= e.creditos %>','<%= e.tds006 %>','<%= e.habilitado %>','<%= (e.observacion||'').replace(/'/g,'') %>')">
+                    Editar
+                  </button>
+                  <% if (!e.ya_registrado) { %>
+                    <form action="/admin/habilitados/<%= e.id %>/eliminar" method="POST" style="display:inline"
+                          onsubmit="return confirm('Eliminar a <%= e.nombres %> de la lista?')">
+                      <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr><td colspan="8" class="empty-state">No hay estudiantes en la lista</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INFO BOX -->
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px 20px;font-size:13px;color:#92400e">
+  <strong>&#x2139; Como funciona la validacion:</strong><br>
+  Cuando un estudiante intenta registrarse, el sistema verifica:<br>
+  1. Que su cedula este en esta lista.<br>
+  2. Que tenga TDS006 - Proyecto Integrador APROBADO.<br>
+  3. Que tenga minimo 46 creditos academicos aprobados y/o matriculados.<br>
+  4. Que este marcado como <strong>Habilitado = Si</strong>.<br>
+  Si no cumple alguna condicion, el registro es bloqueado con un mensaje explicativo.
+</div>
+
+<!-- MODAL CREAR -->
+<div id="modal-crear" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:500px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Agregar Estudiante a la Lista</span>
+      <button onclick="document.getElementById('modal-crear').style.display='none'" style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form action="/admin/habilitados/crear" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cedula *</label>
+            <input type="text" name="cedula" class="form-control" required placeholder="Numero de cedula">
+          </div>
+          <div class="form-group">
+            <label>Nombres *</label>
+            <input type="text" name="nombres" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Apellidos *</label>
+          <input type="text" name="apellidos" class="form-control" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Creditos aprobados/matriculados</label>
+            <input type="number" name="creditos" class="form-control" min="0" max="200" placeholder="Ej: 48">
+            <small style="color:var(--n400);font-size:11px">Minimo requerido: 46 creditos</small>
+          </div>
+          <div class="form-group" style="display:flex;flex-direction:column;justify-content:center">
+            <label style="margin-bottom:10px">TDS006 Aprobado</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0">
+              <input type="checkbox" name="tds006" style="width:16px;height:16px;accent-color:#2563eb">
+              TDS006 - Proyecto Integrador APROBADO
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;margin-bottom:8px">
+            <input type="checkbox" name="habilitado" style="width:16px;height:16px;accent-color:#2563eb">
+            <strong>Habilitar para registro</strong> (solo aplica si cumple los dos requisitos)
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Observacion</label>
+          <textarea name="observacion" class="form-control" rows="2" placeholder="Ej: Pendiente aprobar TDS006..."></textarea>
+        </div>
+        <div style="display:flex;gap:9px;margin-top:4px">
+          <button type="submit" class="btn btn-primary">Agregar</button>
+          <button type="button" onclick="document.getElementById('modal-crear').style.display='none'" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:460px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Editar Habilitacion</span>
+      <button onclick="document.getElementById('modal-editar').style.display='none'" style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form id="form-editar" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Creditos</label>
+            <input type="number" name="creditos" id="ed-creditos" class="form-control" min="0" max="200">
+          </div>
+          <div class="form-group" style="display:flex;flex-direction:column;justify-content:center">
+            <label style="margin-bottom:10px">TDS006</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0">
+              <input type="checkbox" name="tds006" id="ed-tds006" style="width:16px;height:16px;accent-color:#2563eb">
+              Aprobado
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;margin-bottom:8px">
+            <input type="checkbox" name="habilitado" id="ed-habilitado" style="width:16px;height:16px;accent-color:#2563eb">
+            <strong>Habilitado para registro</strong>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Observacion</label>
+          <textarea name="observacion" id="ed-obs" class="form-control" rows="2"></textarea>
+        </div>
+        <div style="display:flex;gap:9px;margin-top:4px">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" onclick="document.getElementById('modal-editar').style.display='none'" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirEditar(id, creditos, tds006, habilitado, obs) {
+  document.getElementById('form-editar').action = '/admin/habilitados/' + id + '/editar';
+  document.getElementById('ed-creditos').value   = creditos;
+  document.getElementById('ed-tds006').checked   = tds006 === '1';
+  document.getElementById('ed-habilitado').checked = habilitado === '1';
+  document.getElementById('ed-obs').value         = obs;
+  document.getElementById('modal-editar').style.display = 'flex';
+}
+</script>
+
+<%- include('../partials/layout-bottom') %>

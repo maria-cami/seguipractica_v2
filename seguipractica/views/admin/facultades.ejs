@@ -1,0 +1,150 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Facultades</h2>
+    <p class="page-sub">Gestion de facultades de la universidad</p>
+  </div>
+  <button onclick="document.getElementById('modal-crear').style.display='flex'"
+          class="btn btn-primary btn-sm">+ Nueva Facultad</button>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Facultad</th>
+          <th>Codigo</th>
+          <th>Programas</th>
+          <th>Estado</th>
+          <th>Creada</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (facultades.length > 0) { %>
+          <% for (var i = 0; i < facultades.length; i++) { %>
+            <% var f = facultades[i]; %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:20px">&#x1F3EB;</span>
+                  <span style="font-weight:600;color:var(--c0)"><%= f.nombre %></span>
+                </div>
+              </td>
+              <td><span class="badge badge-blue"><%= f.codigo %></span></td>
+              <td style="text-align:center;font-weight:600"><%= f.total_programas %></td>
+              <td>
+                <% if (f.activo) { %>
+                  <span class="badge badge-green">Activa</span>
+                <% } else { %>
+                  <span class="badge badge-red">Inactiva</span>
+                <% } %>
+              </td>
+              <td class="text-sm"><%= f.creado_en ? f.creado_en.split(' ')[0] : '—' %></td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn btn-ghost btn-xs"
+                    onclick="abrirEditar('<%= f.id %>','<%= f.nombre %>','<%= f.codigo %>','<%= f.activo %>')">
+                    Editar
+                  </button>
+                  <% if (f.total_programas === 0) { %>
+                    <form action="/admin/facultades/<%= f.id %>/eliminar" method="POST" style="display:inline"
+                          onsubmit="return confirm('Eliminar la facultad <%= f.nombre %>?')">
+                      <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                    </form>
+                  <% } else { %>
+                    <span style="font-size:11px;color:var(--n400)">Tiene programas</span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr><td colspan="6" class="empty-state">No hay facultades registradas</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL CREAR -->
+<div id="modal-crear" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:480px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Nueva Facultad</span>
+      <button onclick="document.getElementById('modal-crear').style.display='none'"
+              style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form action="/admin/facultades/crear" method="POST">
+        <div class="form-group">
+          <label>Nombre de la Facultad *</label>
+          <input type="text" name="nombre" class="form-control" required
+                 placeholder="Ej: Ingenieria y Arquitectura">
+        </div>
+        <div class="form-group">
+          <label>Codigo *</label>
+          <input type="text" name="codigo" class="form-control" required
+                 placeholder="Ej: FIA" style="text-transform:uppercase"
+                 maxlength="10">
+          <small style="color:var(--n400);font-size:11px">Codigo corto unico para identificar la facultad (max 10 caracteres)</small>
+        </div>
+        <div style="display:flex;gap:9px;margin-top:6px">
+          <button type="submit" class="btn btn-primary">Crear Facultad</button>
+          <button type="button" onclick="document.getElementById('modal-crear').style.display='none'"
+                  class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:480px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Editar Facultad</span>
+      <button onclick="document.getElementById('modal-editar').style.display='none'"
+              style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form id="form-editar" method="POST">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" name="nombre" id="ed-nombre" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Codigo *</label>
+          <input type="text" name="codigo" id="ed-codigo" class="form-control" required
+                 style="text-transform:uppercase" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0">
+            <input type="checkbox" name="activo" id="ed-activo"
+                   style="width:15px;height:15px;accent-color:var(--c3)">
+            Facultad activa
+          </label>
+        </div>
+        <div style="display:flex;gap:9px;margin-top:6px">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="button" onclick="document.getElementById('modal-editar').style.display='none'"
+                  class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirEditar(id, nombre, codigo, activo) {
+  document.getElementById('form-editar').action = '/admin/facultades/' + id + '/editar';
+  document.getElementById('ed-nombre').value    = nombre;
+  document.getElementById('ed-codigo').value    = codigo;
+  document.getElementById('ed-activo').checked  = activo === '1';
+  document.getElementById('modal-editar').style.display = 'flex';
+}
+</script>
+
+<%- include('../partials/layout-bottom') %>

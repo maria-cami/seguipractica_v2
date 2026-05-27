@@ -1,0 +1,279 @@
+<%- include('../partials/layout-top') %>
+
+<div class="grid-2-1">
+  <!-- COLUMNA PRINCIPAL -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Datos de mi Practica</h3>
+        <% if (practica.estado === 'En Proceso') { %>
+          <span class="badge badge-blue"><%= practica.estado %></span>
+        <% } else if (practica.estado === 'Finalizada') { %>
+          <span class="badge badge-green"><%= practica.estado %></span>
+        <% } else if (practica.estado === 'Pendiente Docs') { %>
+          <span class="badge badge-yellow"><%= practica.estado %></span>
+        <% } else { %>
+          <span class="badge badge-red"><%= practica.estado %></span>
+        <% } %>
+      </div>
+      <div class="card-body">
+
+        <div class="detail-section">
+          <h4 class="detail-section-title">Datos Personales</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Nombre completo</div>
+              <div class="detail-value"><%= practica.nombres %> <%= practica.apellidos %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Cedula</div>
+              <div class="detail-value mono"><%= practica.cedula %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Correo</div>
+              <div class="detail-value"><%= practica.email %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Celular</div>
+              <div class="detail-value"><%= practica.celular || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Codigo Curso</div>
+              <div class="detail-value"><%= practica.codigo_curso || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Docente</div>
+              <div class="detail-value">
+                <% if (practica.docente_nombres) { %>
+                  <%= practica.docente_nombres %> <%= practica.docente_apellidos %>
+                <% } else { %>Sin asignar<% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4 class="detail-section-title">Empresa</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Empresa</div>
+              <div class="detail-value"><%= practica.empresa_nombre || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">NIT</div>
+              <div class="detail-value mono"><%= practica.empresa_nit || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Direccion</div>
+              <div class="detail-value"><%= practica.empresa_dir || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Barrio</div>
+              <div class="detail-value"><%= practica.empresa_barrio || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Punto de Referencia</div>
+              <div class="detail-value"><%= practica.empresa_pref || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Telefono Empresa</div>
+              <div class="detail-value"><%= practica.empresa_tel || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Sector</div>
+              <div class="detail-value"><%= practica.empresa_sector || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Naturaleza</div>
+              <div class="detail-value"><%= practica.empresa_naturaleza || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Clasificacion</div>
+              <div class="detail-value"><%= practica.empresa_clasif || '—' %></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4 class="detail-section-title">Jefe / Supervisor</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Nombre</div>
+              <div class="detail-value"><%= practica.jefe_nombre || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Correo</div>
+              <div class="detail-value"><%= practica.jefe_email || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Telefono</div>
+              <div class="detail-value"><%= practica.jefe_telefono || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Celular</div>
+              <div class="detail-value"><%= practica.jefe_celular || '—' %></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4 class="detail-section-title">Contrato</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Cargo</div>
+              <div class="detail-value"><%= practica.cargo || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Tipo de Contrato</div>
+              <div class="detail-value"><%= practica.tipo_contrato || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Carta/Contrato</div>
+              <div class="detail-value"><%= practica.carta_laboral || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Salario</div>
+              <div class="detail-value">
+                <% if (practica.salario) { %>
+                  $<%= Number(practica.salario).toLocaleString('es-CO') %>
+                <% } else { %>—<% } %>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Fecha de Inicio</div>
+              <div class="detail-value mono"><%= practica.fecha_inicio || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Fecha de Fin</div>
+              <div class="detail-value mono"><%= practica.fecha_fin || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Tiempo en Empresa</div>
+              <div class="detail-value"><%= practica.tiempo_empresa || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">EPS</div>
+              <div class="detail-value"><%= practica.eps || '—' %></div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">ARL</div>
+              <div class="detail-value"><%= practica.arl || '—' %></div>
+            </div>
+          </div>
+        </div>
+
+        <% if (practica.funcion) { %>
+        <div class="detail-section">
+          <h4 class="detail-section-title">Funcion que Desempena</h4>
+          <p class="detail-text"><%= practica.funcion %></p>
+        </div>
+        <% } %>
+
+        <% if (practica.desarrollo) { %>
+        <div class="detail-section">
+          <h4 class="detail-section-title">Desarrollo de la Practica</h4>
+          <p class="detail-text"><%= practica.desarrollo %></p>
+        </div>
+        <% } %>
+
+        <% if (practica.observacion) { %>
+        <div class="detail-section">
+          <h4 class="detail-section-title">Observaciones</h4>
+          <p class="detail-text"><%= practica.observacion %></p>
+        </div>
+        <% } %>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUMNA LATERAL -->
+  <div>
+    <!-- PROGRESO -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-header"><h3 class="card-title">Mi Progreso</h3></div>
+      <div class="card-body">
+        <div class="progress-big">
+          <div class="progress-pct"><%= porcentaje %>%</div>
+          <div class="progress-sub"><%= completados %> de <%= requisitos.length %> requisitos</div>
+        </div>
+        <div class="progress-bar-wrap" style="height:10px;margin-bottom:14px">
+          <div class="progress-bar" style="width:<%= porcentaje %>%"></div>
+        </div>
+        <% if (practica.nota_final) { %>
+          <div class="nota-box">
+            <div class="nota-label">Nota Final</div>
+            <div class="nota-value"><%= practica.nota_final %></div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- REQUISITOS -->
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Estado de Requisitos</h3></div>
+      <div class="card-body card-body-tight">
+        <% for (var i = 0; i < requisitos.length; i++) { %>
+          <div class="req-row">
+            <span class="req-label"><%= requisitos[i].label %></span>
+            <% if (requisitos[i].value) { %>
+              <span class="req-ok">&#x2713;</span>
+            <% } else { %>
+              <span class="req-no">&#x2014;</span>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORIAL DE PRACTICAS -->
+<% if (practicas.length > 1) { %>
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <h3 class="card-title">&#x1F4DA; Historial de Practicas</h3>
+    <span class="badge badge-blue"><%= practicas.length %> practicas</span>
+  </div>
+  <div class="card-body" style="padding:0">
+    <% for (var h = 0; h < practicas.length; h++) { %>
+      <% var hist = practicas[h]; %>
+      <div style="padding:14px 18px;border-bottom:1px solid var(--n100);
+                  <%= hist.id === practica.id ? 'background:#eff6ff' : '' %>">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-size:16px">&#x1F4CB;</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--c0)">
+              <%= hist.semestre_practica || 'Practica' %>
+              <% if (hist.id === practica.id) { %>
+                <span class="badge badge-blue" style="margin-left:6px">Actual</span>
+              <% } %>
+            </div>
+            <div style="font-size:12px;color:var(--n500);margin-top:2px">
+              <%= hist.empresa_nombre || '—' %>
+              <% if (hist.cargo) { %> · <%= hist.cargo %><% } %>
+            </div>
+            <div style="font-size:11px;color:var(--n400);margin-top:2px">
+              <%= hist.fecha_inicio || '—' %> → <%= hist.fecha_fin || '—' %>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+            <span class="badge
+              <%= hist.estado === 'Finalizada'     ? 'badge-green'  :
+                  hist.estado === 'En Proceso'     ? 'badge-blue'   :
+                  hist.estado === 'Pendiente Docs' ? 'badge-yellow' : 'badge-red' %>">
+              <%= hist.estado %>
+            </span>
+            <% if (hist.nota_final) { %>
+              <span style="font-size:13px;font-weight:700;color:var(--c0)">
+                Nota: <%= hist.nota_final %>
+              </span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+<% } %>
+<%- include('../partials/layout-bottom') %>

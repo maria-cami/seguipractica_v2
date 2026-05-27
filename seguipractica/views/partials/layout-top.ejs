@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= titulo %> | SeguiPractica 2025</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-icon">&#x1F393;</div>
+      <div>
+        <div class="sb-name">SeguiPractica</div>
+        <div class="sb-period">2025-1</div>
+      </div>
+    </div>
+
+    <div class="sb-user">
+      <div class="sb-user-role">
+        <% if (user.role === 'admin') { %>Administrador<% } %>
+        <% if (user.role === 'docente') { %>Docente<% } %>
+        <% if (user.role === 'estudiante') { %>Estudiante<% } %>
+      </div>
+      <div class="sb-user-name"><%= user.nombres %> <%= user.apellidos %></div>
+    </div>
+
+    <nav class="sb-nav">
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard"
+           class="nav-link <%= titulo === 'Dashboard' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F4CA;</span> Dashboard
+        </a>
+        <a href="/admin/estudiantes"
+           class="nav-link <%= titulo === 'Estudiantes' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F465;</span> Estudiantes
+        </a>
+        <a href="/admin/docentes"
+           class="nav-link <%= titulo === 'Docentes' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F468;&#x200D;&#x1F3EB;</span> Docentes
+        </a>
+        <a href="/admin/empresas"
+           class="nav-link <%= titulo === 'Empresas' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F3E2;</span> Empresas
+        </a>
+        <a href="/admin/habilitados"
+           class="nav-link <%= titulo === 'Estudiantes Habilitados' ? 'active' : '' %>">
+          <span class="nav-icon">&#x2705;</span> Habilitados
+        </a>
+        <a href="/admin/seguimientos"
+           class="nav-link <%= titulo === 'Seguimientos' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F4CB;</span> Seguimientos
+        </a>
+        <a href="/admin/usuarios"
+           class="nav-link <%= titulo === 'Usuarios' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F511;</span> Usuarios
+        </a>
+
+        <a href="/admin/facultades"
+            class="nav-link <%= titulo === 'Facultades' ? 'active' : '' %>">
+            <span class="nav-icon">&#x1F3EB;</span> Facultades
+          </a>
+          <a href="/admin/programas"
+            class="nav-link <%= titulo === 'Programas' ? 'active' : '' %>">
+            <span class="nav-icon">&#x1F4BB;</span> Programas
+          </a>
+      <% } %>
+
+      <% if (user.role === 'docente') { %>
+        <a href="/docente/dashboard"
+           class="nav-link <%= titulo === 'Mi Dashboard' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F4CA;</span> Dashboard
+        </a>
+        <a href="/docente/mis-estudiantes"
+           class="nav-link <%= titulo === 'Mis Estudiantes' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F465;</span> Mis Estudiantes
+        </a>
+        <a href="/docente/seguimiento"
+           class="nav-link <%= titulo === 'Registrar Seguimiento' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F4DD;</span> Registrar Seguimiento
+        </a>
+      <% } %>
+      
+
+      <% if (user.role === 'estudiante') { %>
+        <a href="/estudiante/practica"
+           class="nav-link <%= titulo === 'Mi Practica' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F393;</span> Mi Practica
+        </a>
+        <a href="/estudiante/seguimientos"
+           class="nav-link <%= titulo === 'Mis Seguimientos' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F4CB;</span> Mis Seguimientos
+        </a>
+        <a href="/estudiante/documentos"
+           class="nav-link <%= titulo === 'Mis Documentos' ? 'active' : '' %>">
+          <span class="nav-icon">&#x1F4C4;</span> Mis Documentos
+        </a>
+      <% } %>
+    </nav>
+
+    <div class="sb-footer">
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-logout">&#x2B05; Cerrar sesion</button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-title"><%= titulo %></div>
+      <div class="topbar-user">
+        <div class="user-avatar"><%= user.nombres[0] %><%= user.apellidos[0] %></div>
+        <span class="user-name"><%= user.nombres %> <%= user.apellidos %></span>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <% if (success_msg.length > 0) { %>
+        <div class="alert alert-success"><%= success_msg[0] %></div>
+      <% } %>
+      <% if (error_msg.length > 0) { %>
+        <div class="alert alert-error"><%= error_msg[0] %></div>
+      <% } %>

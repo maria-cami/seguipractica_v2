@@ -1,0 +1,279 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title"><%= practica.nombres %> <%= practica.apellidos %></h2>
+    <p class="page-sub">Cedula: <%= practica.cedula %> | Periodo: <%= practica.periodo %></p>
+  </div>
+  <div class="page-actions">
+    <span class="badge <%= practica.estado === 'Finalizada' ? 'badge-green' : practica.estado === 'En Proceso' ? 'badge-blue' : 'badge-yellow' %>">
+      <%= practica.estado %>
+    </span>
+    <a href="/admin/estudiantes" class="btn btn-secondary btn-sm">&#x2190; Volver</a>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Datos de la Practica</h3>
+      </div>
+      <div class="card-body">
+        <div class="detail-section">
+          <h4 class="detail-section-title">Empresa</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Empresa</div><div class="detail-value"><%= practica.empresa_nombre || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">NIT</div><div class="detail-value mono"><%= practica.empresa_nit || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Sector</div><div class="detail-value"><%= practica.empresa_sector || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Clasificacion</div><div class="detail-value"><%= practica.empresa_clasif || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Cargo</div><div class="detail-value"><%= practica.cargo || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Contrato</div><div class="detail-value"><%= practica.tipo_contrato || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Inicio</div><div class="detail-value mono"><%= practica.fecha_inicio || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Fin</div><div class="detail-value mono"><%= practica.fecha_fin || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">EPS</div><div class="detail-value"><%= practica.eps || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">ARL</div><div class="detail-value"><%= practica.arl || '&#x2014;' %></div></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4 class="detail-section-title">Jefe / Supervisor</h4>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Nombre</div><div class="detail-value"><%= practica.jefe_nombre || '&#x2014;' %></div></div>
+            <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value"><%= practica.jefe_email || '&#x2014;' %></div></div>
+          </div>
+        </div>
+
+        <% if (seguimientos.length > 0) { %>
+        <div class="detail-section">
+          <h4 class="detail-section-title">Seguimientos Registrados</h4>
+          <% for (var i = 0; i < seguimientos.length; i++) { %>
+            <% var s = seguimientos[i]; %>
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:8px">
+              <div style="font-weight:600;font-size:13px;color:#1e40af"><%= s.tipo %> &mdash; <%= s.fecha %> &mdash; Nota: <%= s.nota || '&#x2014;' %></div>
+              <% if (s.observacion) { %>
+                <div style="font-size:12px;color:#475569;margin-top:3px"><%= s.observacion %></div>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+        <% } %>
+
+        <% if (documentos.length > 0) { %>
+        <div class="detail-section">
+          <h4 class="detail-section-title">Documentos Subidos</h4>
+          <% for (var j = 0; j < documentos.length; j++) { %>
+            <% var d = documentos[j]; %>
+            <div style="background:var(--n50);border:1px solid var(--n200);border-radius:12px;padding:16px;margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                <span style="font-size:26px">
+                  <% if (d.mime_type === 'application/pdf') { %>&#x1F4C4;<% } else { %>&#x1F5BC;<% } %>
+                </span>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:700;color:var(--n700)"><%= d.tipo %></div>
+                  <div style="font-size:12px;color:var(--n400)"><%= d.nombre_orig %></div>
+                  <div style="font-size:11px;color:var(--n400);margin-top:2px"><%= d.creado_en %></div>
+                </div>
+                <% if (d.estado === 'Aprobado') { %>
+                  <span class="badge badge-green">&#x2713; Aprobado</span>
+                <% } else if (d.estado === 'Rechazado') { %>
+                  <span class="badge badge-red">&#x2717; Rechazado</span>
+                <% } else { %>
+                  <span class="badge badge-yellow">&#x23F3; Pendiente</span>
+                <% } %>
+                <a href="/admin/documentos/<%= d.id %>/descargar" class="btn btn-secondary btn-sm">&#x2B07; Descargar</a>
+              </div>
+              <% if (d.observacion_doc) { %>
+                <div style="background:var(--white);border:1px solid var(--n200);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--n600);margin-bottom:10px">
+                  <strong>Observacion:</strong> <%= d.observacion_doc %>
+                </div>
+              <% } %>
+              <% if (d.estado !== 'Aprobado') { %>
+                <form action="/admin/estudiantes/<%= practica.id %>/documentos/<%= d.id %>/estado" method="POST">
+                  <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+                    <div style="flex:1;min-width:180px">
+                      <input type="text" name="observacion" class="form-control"
+                             placeholder="Observacion (opcional)..." style="font-size:12px;padding:7px 10px">
+                    </div>
+                    <input type="hidden" name="estado" id="estado-<%= d.id %>" value="Aprobado">
+                    <button type="submit" class="btn btn-success btn-sm"
+                            onclick="document.getElementById('estado-<%= d.id %>').value='Aprobado'">
+                      &#x2713; Aprobar
+                    </button>
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="document.getElementById('estado-<%= d.id %>').value='Rechazado'">
+                      &#x2717; Rechazar
+                    </button>
+                  </div>
+                </form>
+              <% } else { %>
+                <form action="/admin/estudiantes/<%= practica.id %>/documentos/<%= d.id %>/estado" method="POST">
+                  <input type="hidden" name="estado" value="Pendiente">
+                  <input type="hidden" name="observacion" value="">
+                  <button type="submit" class="btn btn-ghost btn-sm">&#x21A9; Quitar aprobacion</button>
+                </form>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+        <% } else { %>
+          <div class="detail-section">
+            <h4 class="detail-section-title">Documentos</h4>
+            <p style="font-size:13px;color:var(--n400)">El estudiante no ha subido documentos aun.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITAR -->
+  <div>
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Editar Practica</h3></div>
+      <div class="card-body">
+        <form action="/admin/estudiantes/<%= practica.id %>/editar" method="POST">
+          <div class="form-group">
+            <label>Docente</label>
+            <select name="docente_id" class="form-control">
+              <option value="">Sin asignar</option>
+              <% for (var k = 0; k < docentes.length; k++) { %>
+                <option value="<%= docentes[k].id %>" <%= practica.docente_id === docentes[k].id ? 'selected' : '' %>>
+                  <%= docentes[k].nombres %> <%= docentes[k].apellidos %>
+                </option>
+              <% } %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Estado</label>
+            <select name="estado" class="form-control">
+              <option value="En Proceso"       <%= practica.estado === 'En Proceso'       ? 'selected' : '' %>>En Proceso</option>
+              <option value="Finalizada"        <%= practica.estado === 'Finalizada'        ? 'selected' : '' %>>Finalizada</option>
+              <option value="Pendiente Docs"    <%= practica.estado === 'Pendiente Docs'    ? 'selected' : '' %>>Pendiente Docs</option>
+              <option value="Cancelada/Perdida" <%= practica.estado === 'Cancelada/Perdida' ? 'selected' : '' %>>Cancelada/Perdida</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nota Final</label>
+            <input type="number" name="nota_final" class="form-control" min="0" max="5" step="0.1" value="<%= practica.nota_final || '' %>">
+          </div>
+          <div class="form-group">
+            <label>Empresa</label>
+            <input type="text" name="empresa_nombre" class="form-control" value="<%= practica.empresa_nombre || '' %>">
+          </div>
+          <input type="hidden" name="periodo"           value="<%= practica.periodo %>">
+          <input type="hidden" name="codigo_curso"      value="<%= practica.codigo_curso || '' %>">
+          <input type="hidden" name="empresa_nit"       value="<%= practica.empresa_nit || '' %>">
+          <input type="hidden" name="empresa_dir"       value="<%= practica.empresa_dir || '' %>">
+          <input type="hidden" name="empresa_tel"       value="<%= practica.empresa_tel || '' %>">
+          <input type="hidden" name="empresa_barrio"    value="<%= practica.empresa_barrio || '' %>">
+          <input type="hidden" name="empresa_pref"      value="<%= practica.empresa_pref || '' %>">
+          <input type="hidden" name="empresa_sector"    value="<%= practica.empresa_sector || '' %>">
+          <input type="hidden" name="empresa_naturaleza" value="<%= practica.empresa_naturaleza || '' %>">
+          <input type="hidden" name="empresa_clasif"    value="<%= practica.empresa_clasif || '' %>">
+          <input type="hidden" name="jefe_nombre"       value="<%= practica.jefe_nombre || '' %>">
+          <input type="hidden" name="jefe_email"        value="<%= practica.jefe_email || '' %>">
+          <input type="hidden" name="jefe_telefono"     value="<%= practica.jefe_telefono || '' %>">
+          <input type="hidden" name="jefe_celular"      value="<%= practica.jefe_celular || '' %>">
+          <input type="hidden" name="cargo"             value="<%= practica.cargo || '' %>">
+          <input type="hidden" name="tipo_contrato"     value="<%= practica.tipo_contrato || '' %>">
+          <input type="hidden" name="carta_laboral"     value="<%= practica.carta_laboral || '' %>">
+          <input type="hidden" name="funcion"           value="<%= practica.funcion || '' %>">
+          <input type="hidden" name="tiempo_empresa"    value="<%= practica.tiempo_empresa || '' %>">
+          <input type="hidden" name="salario"           value="<%= practica.salario || '' %>">
+          <input type="hidden" name="fecha_inicio"      value="<%= practica.fecha_inicio || '' %>">
+          <input type="hidden" name="fecha_fin"         value="<%= practica.fecha_fin || '' %>">
+          <input type="hidden" name="eps"               value="<%= practica.eps || '' %>">
+          <input type="hidden" name="arl"               value="<%= practica.arl || '' %>">
+          <input type="hidden" name="desarrollo"        value="<%= practica.desarrollo || '' %>">
+          <input type="hidden" name="observacion_final" value="<%= practica.observacion_final || '' %>">
+          <input type="hidden" name="observacion"       value="<%= practica.observacion || '' %>">
+
+          <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#475569;margin:12px 0 8px">Requisitos</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px">
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_campus"      <%= practica.req_campus      ? 'checked' : '' %>> Campus Virtual
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_seg_social"  <%= practica.req_seg_social  ? 'checked' : '' %>> Seg. Social
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_eps_cert"    <%= practica.req_eps_cert    ? 'checked' : '' %>> Cert. EPS
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_arl_cert"    <%= practica.req_arl_cert    ? 'checked' : '' %>> Cert. ARL
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_matriculado" <%= practica.req_matriculado ? 'checked' : '' %>> Matriculado
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_acta"        <%= practica.req_acta        ? 'checked' : '' %>> Acta
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_seg1"        <%= practica.req_seg1        ? 'checked' : '' %>> Seguimiento 1
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="req_seg2"        <%= practica.req_seg2        ? 'checked' : '' %>> Seguimiento 2
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (historialPracticas && historialPracticas.length > 1) { %>
+<div class="card" style="margin-top:16px">
+  <div class="card-header">
+    <h3 class="card-title">&#x1F4DA; Historial de Practicas</h3>
+  </div>
+  <div class="card-body" style="padding:0">
+    <% for (var h = 0; h < historialPracticas.length; h++) { %>
+      <% var hist = historialPracticas[h]; %>
+      <% var esActual = hist.id === practica.id; %>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--n100);" class="<% if (esActual) { %>hist-actual<% } %>">
+        <span style="font-size:18px">&#x1F4CB;</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--c0)">
+            <%= hist.semestre_practica || 'Practica' %>
+            <% if (esActual) { %>
+              <span class="badge badge-blue" style="margin-left:6px">Actual</span>
+            <% } %>
+          </div>
+          <div style="font-size:12px;color:var(--n500)">
+            <%= hist.empresa_nombre || '—' %> · <%= hist.cargo || '—' %>
+          </div>
+          <div style="font-size:11px;color:var(--n400)">
+            Docente: <%= hist.doc_n ? hist.doc_n + ' ' + hist.doc_a : '—' %>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <% if (hist.estado === 'Finalizada') { %>
+            <span class="badge badge-green"><%= hist.estado %></span>
+          <% } else if (hist.estado === 'En Proceso') { %>
+            <span class="badge badge-blue"><%= hist.estado %></span>
+          <% } else { %>
+            <span class="badge badge-yellow"><%= hist.estado %></span>
+          <% } %>
+          <% if (hist.nota_final) { %>
+            <div style="font-size:13px;font-weight:700;color:var(--c0);margin-top:4px">
+              Nota: <%= hist.nota_final %>
+            </div>
+          <% } %>
+          <a href="/admin/estudiantes/<%= hist.id %>"
+             class="btn btn-ghost btn-xs" style="margin-top:5px">Ver</a>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+<% } %>
+
+<style>
+</style>
+
+<style>
+.hist-actual { background: #eff6ff; }
+</style>
+
+<%- include('../partials/layout-bottom') %>

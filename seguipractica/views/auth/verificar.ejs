@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Habilitacion | SeguiPractica 2025</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    .verify-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0b1426 0%, #1a3a6c 100%);
+      padding: 24px;
+    }
+    .verify-card {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .verify-header {
+      background: linear-gradient(135deg, #0b1426, #1a3a6c);
+      padding: 32px 36px 28px;
+      text-align: center;
+    }
+    .verify-icon {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 14px;
+    }
+    .verify-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .verify-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+    }
+    .verify-body { padding: 32px 36px; }
+
+    /* RESULTADO OK */
+    .result-ok {
+      display: none;
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .result-ok .res-icon { font-size: 40px; margin-bottom: 8px; }
+    .result-ok .res-title { font-size: 16px; font-weight: 700; color: #065f46; margin-bottom: 4px; }
+    .result-ok .res-name  { font-size: 18px; font-weight: 700; color: #0b1426; margin-bottom: 12px; }
+    .result-ok .res-reqs  { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+    .req-item {
+      display: flex; align-items: center; gap: 9px;
+      background: #fff; border: 1px solid #d1fae5;
+      border-radius: 9px; padding: 8px 12px;
+      font-size: 13px; color: #065f46; font-weight: 500;
+    }
+    .req-item span { font-size: 16px; }
+
+    /* RESULTADO ERROR */
+    .result-err {
+      display: none;
+      background: #fef2f2;
+      border: 2px solid #ef4444;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .result-err .res-icon  { font-size: 40px; margin-bottom: 8px; }
+    .result-err .res-title { font-size: 16px; font-weight: 700; color: #b91c1c; margin-bottom: 4px; }
+    .result-err .res-msg   { font-size: 13px; color: #7f1d1d; line-height: 1.6; margin-bottom: 12px; }
+    .err-reqs { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .err-item {
+      display: flex; align-items: center; gap: 9px;
+      border-radius: 9px; padding: 8px 12px;
+      font-size: 13px; font-weight: 500;
+    }
+    .err-item.ok  { background: #f0fdf4; color: #065f46; border: 1px solid #d1fae5; }
+    .err-item.bad { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .err-item span { font-size: 16px; }
+    .err-contact {
+      background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 9px; padding: 10px 14px;
+      font-size: 12px; color: #92400e; line-height: 1.6;
+    }
+
+    /* INPUT */
+    .cedula-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .cedula-input {
+      width: 100%;
+      padding: 14px 50px 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      color: #1e293b;
+      font-weight: 600;
+      letter-spacing: 2px;
+      transition: border-color .2s;
+    }
+    .cedula-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+    .cedula-clear {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: #f1f5f9; border: none;
+      border-radius: 6px; width: 28px; height: 28px;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; color: #64748b;
+    }
+    .cedula-clear:hover { background: #e2e8f0; }
+
+    /* LOADING */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-verificar {
+      width: 100%;
+      padding: 13px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      font-family: inherit;
+    }
+    .btn-verificar:hover { background: #1a3a6c; }
+    .btn-verificar:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .btn-registrar {
+      width: 100%;
+      padding: 13px;
+      background: #10b981;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      font-family: inherit;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+    }
+    .btn-registrar:hover { background: #065f46; }
+
+    .back-link {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .back-link a { color: #2563eb; text-decoration: none; }
+    .back-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="verify-screen">
+  <div class="verify-card">
+
+    <div class="verify-header">
+      <div class="verify-icon">&#x1F512;</div>
+      <div class="verify-title">Verificacion de Habilitacion</div>
+      <div class="verify-sub">
+        Ingresa tu numero de cedula para verificar si estas habilitado para realizar practicas empresariales.
+      </div>
+    </div>
+
+    <div class="verify-body">
+
+      <!-- INPUT CEDULA -->
+      <div id="seccion-input">
+        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#475569;display:block;margin-bottom:8px">
+          Numero de Cedula
+        </label>
+        <div class="cedula-wrap">
+          <input type="text" id="cedula-input" class="cedula-input"
+                 placeholder="Ej: 1023626875" maxlength="15"
+                 oninput="onCedulaInput(this)">
+          <button class="cedula-clear" id="btn-clear" onclick="limpiar()">&#x2715;</button>
+        </div>
+        <button class="btn-verificar" id="btn-verificar" onclick="verificar()" disabled>
+          Verificar Habilitacion
+        </button>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Verificando en el sistema...
+      </div>
+
+      <!-- RESULTADO OK -->
+      <div class="result-ok" id="result-ok">
+        <div class="res-icon">&#x1F389;</div>
+        <div class="res-title">Estas habilitado para practicas</div>
+        <div class="res-name" id="res-nombre">—</div>
+        <div class="res-reqs" id="res-reqs-ok"></div>
+        <a href="/registro" id="btn-ir-registro" class="btn-registrar">
+          Continuar con el Registro &#x2192;
+        </a>
+      </div>
+
+      <!-- RESULTADO ERROR -->
+      <div class="result-err" id="result-err">
+        <div class="res-icon">&#x1F6AB;</div>
+        <div class="res-title" id="err-titulo">No habilitado</div>
+        <div class="res-msg" id="err-msg">—</div>
+        <div class="err-reqs" id="err-reqs"></div>
+        <div class="err-contact">
+          &#x1F4DE; Contacta a <strong>Coordinacion Academica</strong> para
+          verificar tu estado academico y habilitar tu acceso al sistema de practicas.
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn-verificar" onclick="limpiar()" style="background:#64748b">
+            Verificar otra cedula
+          </button>
+        </div>
+      </div>
+
+      <div class="back-link">
+        <a href="/login">&#x2190; Volver al inicio de sesion</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function onCedulaInput(el) {
+  var val = el.value.replace(/\D/g, '');
+  el.value = val;
+  document.getElementById('btn-clear').style.display   = val.length > 0 ? 'flex' : 'none';
+  document.getElementById('btn-verificar').disabled    = val.length < 5;
+  // Ocultar resultados al escribir
+  document.getElementById('result-ok').style.display  = 'none';
+  document.getElementById('result-err').style.display = 'none';
+}
+
+function limpiar() {
+  document.getElementById('cedula-input').value        = '';
+  document.getElementById('btn-clear').style.display   = 'none';
+  document.getElementById('btn-verificar').disabled    = true;
+  document.getElementById('result-ok').style.display   = 'none';
+  document.getElementById('result-err').style.display  = 'none';
+  document.getElementById('loading').style.display     = 'none';
+  document.getElementById('cedula-input').focus();
+}
+
+function verificar() {
+  var cedula = document.getElementById('cedula-input').value.trim();
+  if (!cedula) return;
+
+  // Mostrar loading
+  document.getElementById('loading').style.display     = 'flex';
+  document.getElementById('result-ok').style.display   = 'none';
+  document.getElementById('result-err').style.display  = 'none';
+  document.getElementById('btn-verificar').disabled    = true;
+
+  fetch('/verificar-cedula', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cedula: cedula })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    document.getElementById('loading').style.display   = 'none';
+    document.getElementById('btn-verificar').disabled  = false;
+
+    if (data.habilitado) {
+      mostrarOk(data);
+    } else {
+      mostrarError(data);
+    }
+  })
+  .catch(function() {
+    document.getElementById('loading').style.display   = 'none';
+    document.getElementById('btn-verificar').disabled  = false;
+    mostrarError({ titulo: 'Error de conexion', mensaje: 'No se pudo conectar al servidor. Intenta de nuevo.', requisitos: [] });
+  });
+}
+
+function mostrarOk(data) {
+  document.getElementById('res-nombre').textContent = data.nombres + ' ' + data.apellidos;
+
+  var html = '';
+  html += '<div class="req-item"><span>&#x2705;</span> TDS006 - Proyecto Integrador: <strong>APROBADO</strong></div>';
+  html += '<div class="req-item"><span>&#x2705;</span> Creditos academicos: <strong>' + data.creditos + ' / 46 requeridos</strong></div>';
+  document.getElementById('res-reqs-ok').innerHTML = html;
+
+  // Guardar cedula para pasarla al registro
+  document.getElementById('btn-ir-registro').href = '/registro?cedula=' + document.getElementById('cedula-input').value;
+
+  document.getElementById('result-ok').style.display = 'block';
+}
+
+function mostrarError(data) {
+  document.getElementById('err-titulo').textContent = data.titulo || 'No habilitado';
+  document.getElementById('err-msg').textContent    = data.mensaje || '';
+
+  var html = '';
+  if (data.requisitos && data.requisitos.length > 0) {
+    for (var i = 0; i < data.requisitos.length; i++) {
+      var r = data.requisitos[i];
+      html += '<div class="err-item ' + (r.ok ? 'ok' : 'bad') + '">';
+      html += '<span>' + (r.ok ? '&#x2705;' : '&#x274C;') + '</span>';
+      html += r.label;
+      html += '</div>';
+    }
+  }
+  document.getElementById('err-reqs').innerHTML = html;
+  document.getElementById('result-err').style.display = 'block';
+}
+
+// Permitir verificar con Enter
+document.getElementById('cedula-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !document.getElementById('btn-verificar').disabled) {
+    verificar();
+  }
+});
+</script>
+
+</body>
+</html>

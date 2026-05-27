@@ -1,0 +1,34 @@
+<%- include('../partials/layout-top') %>
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-icon">&#x1F465;</div><div class="stat-label">Mis Estudiantes</div><div class="stat-value"><%= total %></div></div>
+  <div class="stat-card"><div class="stat-icon">&#x23F3;</div><div class="stat-label">Sin Seguimiento 1</div><div class="stat-value text-yellow"><%= sinSeg1 %></div></div>
+  <div class="stat-card"><div class="stat-icon">&#x1F4DD;</div><div class="stat-label">Sin Seguimiento 2</div><div class="stat-value text-yellow"><%= sinSeg2 %></div></div>
+  <div class="stat-card"><div class="stat-icon">&#x2705;</div><div class="stat-label">Finalizados</div><div class="stat-value text-green"><%= finaliz %></div></div>
+</div>
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Mis Estudiantes</h3><a href="/docente/mis-estudiantes" class="btn btn-secondary btn-sm">Ver todos</a></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Estudiante</th><th>Empresa</th><th>EPS</th><th>ARL</th><th>Seg.1</th><th>Seg.2</th><th>Estado</th><th>Nota</th><th></th></tr></thead>
+    <tbody>
+      <% if (estudiantes.length > 0) { %>
+        <% for (var i = 0; i < estudiantes.length; i++) { %>
+          <% var e = estudiantes[i]; %>
+          <tr>
+            <td><div class="td-user"><div class="td-av"><%= e.nombres[0] %><%= e.apellidos[0] %></div><span class="td-name"><%= e.apellidos %> <%= e.nombres %></span></div></td>
+            <td class="text-sm"><%= e.empresa_nombre || '&#x2014;' %></td>
+            <td class="text-center"><%= e.req_eps_cert ? '&#x2713;' : '&#x2014;' %></td>
+            <td class="text-center"><%= e.req_arl_cert ? '&#x2713;' : '&#x2014;' %></td>
+            <td class="text-center"><%= e.req_seg1 ? '&#x2713;' : '&#x2014;' %></td>
+            <td class="text-center"><%= e.req_seg2 ? '&#x2713;' : '&#x2014;' %></td>
+            <td><span class="badge <%= e.estado === 'Finalizada' ? 'badge-green' : e.estado === 'En Proceso' ? 'badge-blue' : 'badge-yellow' %>"><%= e.estado %></span></td>
+            <td class="mono bold"><%= e.nota_final || '&#x2014;' %></td>
+            <td><a href="/docente/seguimiento?practica_id=<%= e.practica_id %>" class="btn btn-sm btn-primary">Seguimiento</a></td>
+          </tr>
+        <% } %>
+      <% } else { %>
+        <tr><td colspan="9" class="empty-state">Sin estudiantes asignados</td></tr>
+      <% } %>
+    </tbody>
+  </table></div>
+</div>
+<%- include('../partials/layout-bottom') %>

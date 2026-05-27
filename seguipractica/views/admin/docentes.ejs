@@ -1,0 +1,232 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Docentes</h2>
+    <p class="page-sub">Gestion de docentes responsables de practicas</p>
+  </div>
+  <button onclick="document.getElementById('modal-crear').style.display='flex'"
+          class="btn btn-primary btn-sm">+ Nuevo Docente</button>
+</div>
+
+<!-- STATS -->
+<div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F468;&#x200D;&#x1F3EB;</div>
+    <div class="stat-label">Total Docentes</div>
+    <div class="stat-val"><%= docentes.length %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x2705;</div>
+    <div class="stat-label">Activos</div>
+    <div class="stat-val text-green"><%= docentes.filter(function(d){return d.activo}).length %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F465;</div>
+    <div class="stat-label">Total Estudiantes Asignados</div>
+    <div class="stat-val text-blue"><%= docentes.reduce(function(a,d){return a+d.total_estudiantes},0) %></div>
+  </div>
+</div>
+
+<!-- TABLA -->
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Docente</th>
+          <th>Cedula</th>
+          <th>Correo</th>
+          <th>Celular</th>
+          <th>Telefono</th>
+          <th>Estudiantes</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (docentes.length > 0) { %>
+          <% for (var i = 0; i < docentes.length; i++) { %>
+            <% var d = docentes[i]; %>
+            <tr>
+              <td>
+                <div class="td-user">
+                  <div class="td-av"><%= d.nombres[0] %><%= d.apellidos[0] %></div>
+                  <div>
+                    <div class="td-name"><%= d.apellidos %> <%= d.nombres %></div>
+                    <div class="td-sub">Docente</div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono"><%= d.cedula %></td>
+              <td class="text-sm"><%= d.email %></td>
+              <td class="text-sm"><%= d.celular || '—' %></td>
+              <td class="text-sm"><%= d.telefono || '—' %></td>
+              <td style="text-align:center">
+                <span class="badge badge-blue"><%= d.total_estudiantes %> est.</span>
+              </td>
+              <td>
+                <% if (d.activo) { %>
+                  <span class="badge badge-green">Activo</span>
+                <% } else { %>
+                  <span class="badge badge-red">Inactivo</span>
+                <% } %>
+              </td>
+              <td>
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+
+                  <!-- EDITAR -->
+                  <button class="btn btn-ghost btn-xs"
+                    onclick="abrirEditar(
+                      '<%= d.id %>',
+                      '<%= d.nombres %>',
+                      '<%= d.apellidos %>',
+                      '<%= d.email %>',
+                    )">
+                    Editar
+                  </button>
+
+                  <!-- ACTIVAR / DESACTIVAR -->
+                  <form action="/admin/docentes/<%= d.id %>/toggle" method="POST" style="display:inline">
+                    <button type="submit" class="btn btn-xs <%= d.activo ? 'btn-danger' : 'btn-success' %>">
+                      <%= d.activo ? 'Desactivar' : 'Activar' %>
+                    </button>
+                  </form>
+
+                  <!-- ELIMINAR -->
+                  <% if (d.total_estudiantes === 0) { %>
+                    <form action="/admin/docentes/<%= d.id %>/eliminar" method="POST" style="display:inline"
+                          onsubmit="return confirm('Eliminar al docente <%= d.nombres %> <%= d.apellidos %>?')">
+                      <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                    </form>
+                  <% } else { %>
+                    <span style="font-size:11px;color:var(--n400)" title="Tiene estudiantes asignados">No eliminable</span>
+                  <% } %>
+
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr>
+            <td colspan="8" class="empty-state">No hay docentes registrados</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL CREAR -->
+<div id="modal-crear" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:520px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Nuevo Docente</span>
+      <button onclick="document.getElementById('modal-crear').style.display='none'"
+              style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form action="/admin/docentes/crear" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombres *</label>
+            <input type="text" name="nombres" class="form-control" required placeholder="Nombres">
+          </div>
+          <div class="form-group">
+            <label>Apellidos *</label>
+            <input type="text" name="apellidos" class="form-control" required placeholder="Apellidos">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Cedula *</label>
+          <input type="text" name="cedula" class="form-control" required placeholder="Numero de cedula">
+        </div>
+        <div class="form-group">
+          <label>Correo Electronico *</label>
+          <input type="email" name="email" class="form-control" required placeholder="correo@inst.edu.co">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Celular</label>
+            <input type="tel" name="celular" class="form-control" placeholder="+57 300 000 0000">
+          </div>
+          <div class="form-group">
+            <label>Telefono</label>
+            <input type="tel" name="telefono" class="form-control" placeholder="(604) 000-0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Contrasena * (minimo 6 caracteres)</label>
+          <input type="text" name="password" class="form-control" required placeholder="Contrasena inicial">
+        </div>
+        <div style="display:flex;gap:9px;margin-top:6px">
+          <button type="submit" class="btn btn-primary">Crear Docente</button>
+          <button type="button" onclick="document.getElementById('modal-crear').style.display='none'"
+                  class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:520px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Editar Docente</span>
+      <button onclick="document.getElementById('modal-editar').style.display='none'"
+              style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form id="form-editar" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombres *</label>
+            <input type="text" name="nombres" id="ed-nombres" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Apellidos *</label>
+            <input type="text" name="apellidos" id="ed-apellidos" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Correo Electronico *</label>
+          <input type="email" name="email" id="ed-email" class="form-control" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Celular</label>
+            <input type="tel" name="celular" id="ed-celular" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Telefono</label>
+            <input type="tel" name="telefono" id="ed-telefono" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nueva Contrasena (dejar vacio para no cambiar)</label>
+          <input type="text" name="password" class="form-control" placeholder="Nueva contrasena">
+        </div>
+        <div style="display:flex;gap:9px;margin-top:6px">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="button" onclick="document.getElementById('modal-editar').style.display='none'"
+                  class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirEditar(id, nombres, apellidos, email, celular, telefono) {
+  document.getElementById('form-editar').action = '/admin/docentes/' + id + '/editar';
+  document.getElementById('ed-nombres').value   = nombres;
+  document.getElementById('ed-apellidos').value = apellidos;
+  document.getElementById('ed-email').value     = email;
+  document.getElementById('ed-celular').value   = celular;
+  document.getElementById('ed-telefono').value  = telefono;
+  document.getElementById('modal-editar').style.display = 'flex';
+}
+</script>
+
+<%- include('../partials/layout-bottom') %>

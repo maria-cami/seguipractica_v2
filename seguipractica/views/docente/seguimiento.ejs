@@ -1,0 +1,163 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <h2 class="page-title">Registrar Seguimiento</h2>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Formulario de Seguimiento</h3></div>
+  <div class="card-body">
+
+    <!-- SELECTOR DE ESTUDIANTE (GET para cargar checkboxes) -->
+    <div class="form-row" style="margin-bottom:20px">
+      <div class="form-group">
+        <label>Estudiante *</label>
+        <select class="form-control" id="sel-est" onchange="cargarEstudiante(this.value)">
+          <option value="">-- Selecciona estudiante --</option>
+          <% for (var i = 0; i < estudiantes.length; i++) { %>
+            <option value="<%= estudiantes[i].id %>"
+              <%= seleccionado && seleccionado.id === estudiantes[i].id ? 'selected' : '' %>>
+              <%= estudiantes[i].apellidos %> <%= estudiantes[i].nombres %>
+            </option>
+          <% } %>
+        </select>
+      </div>
+    </div>
+
+    <% if (seleccionado) { %>
+
+    <!-- FORMULARIO POST para guardar el seguimiento -->
+    <form action="/docente/seguimiento" method="POST">
+
+      <!-- Campo oculto con el estudiante seleccionado -->
+      <input type="hidden" name="practica_id" value="<%= seleccionado.id %>">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Seguimiento *</label>
+          <select name="tipo" class="form-control">
+            <option>Seguimiento 1</option>
+            <option>Seguimiento 2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha *</label>
+          <input type="date" name="fecha" class="form-control"
+                 value="<%= new Date().toISOString().split('T')[0] %>" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nota (0.0 - 5.0)</label>
+          <input type="number" name="nota" class="form-control"
+                 min="0" max="5" step="0.1" placeholder="Ej: 4.2">
+        </div>
+        <div class="form-group">
+          <label>Estado de la Practica</label>
+          <select name="estado" class="form-control">
+            <option value="En Proceso">En Proceso</option>
+            <option value="Finalizada">Finalizada</option>
+            <option value="Pendiente Docs">Pendiente Docs</option>
+            <option value="Cancelada/Perdida">Cancelada/Perdida</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Observaciones</label>
+        <textarea name="observacion" class="form-control" rows="3"
+                  placeholder="Escribe las observaciones del seguimiento..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Nota Final (solo si la practica esta finalizada)</label>
+        <input type="number" name="nota_final" class="form-control"
+               min="0" max="5" step="0.1" placeholder="Ej: 4.5">
+      </div>
+
+      <div style="margin-top:14px">
+        <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--n600);margin-bottom:10px">
+          Actualizar Requisitos del Estudiante
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label class="check-item">
+            <input type="checkbox" name="req_campus" <%= seleccionado.req_campus ? 'checked' : '' %>>
+            Campus Virtual
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_seg_social" <%= seleccionado.req_seg_social ? 'checked' : '' %>>
+            Seguridad Social
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_eps_cert" <%= seleccionado.req_eps_cert ? 'checked' : '' %>>
+            Certificado EPS
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_arl_cert" <%= seleccionado.req_arl_cert ? 'checked' : '' %>>
+            Certificado ARL
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_matriculado" <%= seleccionado.req_matriculado ? 'checked' : '' %>>
+            Matriculado
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_acta" <%= seleccionado.req_acta ? 'checked' : '' %>>
+            Acta de Compromisos
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_seg1" <%= seleccionado.req_seg1 ? 'checked' : '' %>>
+            Seguimiento 1 Completado
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="req_seg2" <%= seleccionado.req_seg2 ? 'checked' : '' %>>
+            Seguimiento 2 Completado
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary">Guardar Seguimiento</button>
+        <a href="/docente/mis-estudiantes" class="btn btn-secondary">Cancelar</a>
+      </div>
+
+    </form>
+
+    <% } else { %>
+      <div class="empty-state" style="padding:24px 0">
+        Selecciona un estudiante para continuar
+      </div>
+    <% } %>
+
+  </div>
+</div>
+
+<style>
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--n200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--n700);
+  cursor: pointer;
+  transition: background .15s;
+}
+.check-item:hover { background: var(--n50); }
+.check-item input[type="checkbox"] {
+  width: 15px; height: 15px;
+  accent-color: var(--c3);
+  cursor: pointer;
+}
+</style>
+
+<script>
+function cargarEstudiante(id) {
+  if (!id) return;
+  window.location.href = '/docente/seguimiento?practica_id=' + id;
+}
+</script>
+
+<%- include('../partials/layout-bottom') %>

@@ -1,0 +1,33 @@
+<%- include('../partials/layout-top') %>
+<div class="page-header"><h2 class="page-title">Mis Estudiantes</h2></div>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>Estudiante</th><th>Cedula</th><th>Empresa</th><th>Campus</th><th>EPS</th><th>ARL</th><th>Seg.1</th><th>Seg.2</th><th>Estado</th><th>Nota</th><th>Accion</th></tr></thead>
+  <tbody>
+    <% if (estudiantes.length > 0) { %>
+      <% for (var i = 0; i < estudiantes.length; i++) { %>
+        <% var e = estudiantes[i]; %>
+        <tr>
+          <td><div class="td-user"><div class="td-av"><%= e.nombres[0] %><%= e.apellidos[0] %></div><span class="td-name"><%= e.apellidos %> <%= e.nombres %></span></div></td>
+          <td class="mono"><%= e.cedula %></td>
+          <td class="text-sm"><%= e.empresa_nombre || '&#x2014;' %></td>
+          <td class="text-center"><%= e.req_campus ? '&#x2713;' : '&#x2014;' %></td>
+          <td class="text-center"><%= e.req_eps_cert ? '&#x2713;' : '&#x2014;' %></td>
+          <td class="text-center"><%= e.req_arl_cert ? '&#x2713;' : '&#x2014;' %></td>
+          <td class="text-center"><%= e.req_seg1 ? '&#x2713;' : '&#x2014;' %></td>
+          <td class="text-center"><%= e.req_seg2 ? '&#x2713;' : '&#x2014;' %></td>
+          <td><span class="badge <%= e.estado === 'Finalizada' ? 'badge-green' : e.estado === 'En Proceso' ? 'badge-blue' : 'badge-yellow' %>"><%= e.estado %></span></td>
+          <td class="mono bold"><%= e.nota_final || '&#x2014;' %></td>
+          <td>
+          <div style="display:flex;gap:5px">
+            <a href="/docente/estudiantes/<%= e.practica_id %>" class="btn btn-sm btn-ghost">📎 Ver docs</a>
+            <a href="/docente/seguimiento?practica_id=<%= e.practica_id %>" class="btn btn-sm btn-primary">Gestionar</a>
+          </div>
+        </td>
+        </tr>
+      <% } %>
+    <% } else { %>
+      <tr><td colspan="11" class="empty-state">Sin estudiantes asignados</td></tr>
+    <% } %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/layout-bottom') %>

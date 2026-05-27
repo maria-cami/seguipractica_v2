@@ -1,0 +1,167 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Mis Documentos</h2>
+    <p class="page-sub">Sube tus documentos de practica. Formatos: PDF, JPG, PNG — Max. 5 MB</p>
+  </div>
+</div>
+
+<!-- FORMULARIO SUBIR -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header"><h3 class="card-title">Subir Nuevo Documento</h3></div>
+  <div class="card-body">
+    <form action="/estudiante/documentos/subir" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Documento</label>
+          <select name="tipo" class="form-control">
+            <option>Certificado EPS</option>
+            <option>Certificado ARL</option>
+            <option>Contrato Laboral</option>
+            <option>Carta Laboral</option>
+            <option>Acta de Compromisos</option>
+            <option>Certificado Campus Virtual</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Archivo *</label>
+          <input type="file" name="archivo" class="form-control"
+                 accept=".pdf,.jpg,.jpeg,.png" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Subir Documento</button>
+    </form>
+  </div>
+</div>
+
+<!-- RESUMEN DE ESTADOS -->
+<% if (documentos.length > 0) { %>
+  <% var aprobados  = documentos.filter(function(d){ return d.estado === 'Aprobado'; }).length; %>
+  <% var rechazados = documentos.filter(function(d){ return d.estado === 'Rechazado'; }).length; %>
+  <% var pendientes = documentos.filter(function(d){ return d.estado === 'Pendiente' || !d.estado; }).length; %>
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 18px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:18px">&#x2705;</span>
+      <div>
+        <div style="font-size:11px;color:#15803d;font-weight:600;text-transform:uppercase">Aprobados</div>
+        <div style="font-size:20px;font-weight:700;color:#15803d"><%= aprobados %></div>
+      </div>
+    </div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 18px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:18px">&#x274C;</span>
+      <div>
+        <div style="font-size:11px;color:#b91c1c;font-weight:600;text-transform:uppercase">Rechazados</div>
+        <div style="font-size:20px;font-weight:700;color:#b91c1c"><%= rechazados %></div>
+      </div>
+    </div>
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 18px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:18px">&#x23F3;</span>
+      <div>
+        <div style="font-size:11px;color:#92400e;font-weight:600;text-transform:uppercase">Pendientes</div>
+        <div style="font-size:20px;font-weight:700;color:#92400e"><%= pendientes %></div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<!-- ALERTA DOCUMENTOS RECHAZADOS -->
+<% var rechazadosList = documentos.filter(function(d){ return d.estado === 'Rechazado'; }); %>
+<% if (rechazadosList.length > 0) { %>
+  <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:16px 20px;margin-bottom:20px">
+    <div style="font-size:14px;font-weight:700;color:#b91c1c;margin-bottom:10px">
+      &#x26A0; Tienes <%= rechazadosList.length %> documento(s) rechazado(s) — debes subir una version corregida
+    </div>
+    <% for (var r = 0; r < rechazadosList.length; r++) { %>
+      <div style="background:#fff;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;margin-bottom:7px">
+        <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:4px">
+          &#x1F4C4; <%= rechazadosList[r].tipo %>
+          <span style="font-size:11px;color:#94a3b8;margin-left:6px"><%= rechazadosList[r].nombre_orig %></span>
+        </div>
+        <% if (rechazadosList[r].observacion_doc) { %>
+          <div style="font-size:12px;color:#b91c1c;background:#fef2f2;border-radius:6px;padding:7px 10px">
+            <strong>Razon del rechazo:</strong> <%= rechazadosList[r].observacion_doc %>
+          </div>
+        <% } else { %>
+          <div style="font-size:12px;color:#94a3b8">Sin observacion adicional. Contacta a tu docente.</div>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+<% } %>
+
+<!-- LISTA DE DOCUMENTOS -->
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Todos mis documentos</h3></div>
+  <div class="card-body" style="padding:0">
+    <%if (documentos.length > 0) { %>
+      <%for (var i = 0; i <documentos.length; i++) { %>
+        <%var doc = documentos[i]; %>
+
+        <!-- Color del borde segun estado -->
+        <%var borderColor = '#e2e8f0'; %>
+        <%if (doc.estado === 'Aprobado')  borderColor = '#bbf7d0'; %>
+        <%if (doc.estado === 'Rechazado') borderColor = '#fca5a5'; %>
+        <%if (doc.estado === 'Pendiente' || !doc.estado) borderColor = '#fde68a'; %>
+
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;
+                    border-bottom:1px solid var(--n100);
+                    border-left:4px solid <%= borderColor %>">
+
+          <!-- ICONO -->
+          <div style="font-size:28px;flex-shrink:0">
+            <% if (doc.mime_type === 'application/pdf') { %>&#x1F4C4;<% } else { %>&#x1F5BC;<% } %>
+          </div>
+
+          <!-- INFO -->
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;color:var(--n700)"><%= doc.tipo %></div>
+            <div style="font-size:12px;color:var(--n500);margin-top:1px"><%= doc.nombre_orig %></div>
+            <div style="font-size:11px;color:var(--n400);margin-top:2px">
+              Subido: <%= doc.creado_en ? doc.creado_en.split(' ')[0] : '—' %>
+            </div>
+
+            <!-- OBSERVACION DE RECHAZO -->
+            <% if (doc.estado === 'Rechazado' && doc.observacion_doc) { %>
+              <div style="margin-top:6px;background:#fef2f2;border:1px solid #fecaca;
+                          border-radius:7px;padding:7px 10px;font-size:12px;color:#b91c1c">
+                <strong>&#x26A0; Razon del rechazo:</strong> <%= doc.observacion_doc %>
+              </div>
+            <% } %>
+
+            <!-- OBSERVACION DE APROBACION -->
+            <% if (doc.estado === 'Aprobado' && doc.observacion_doc) { %>
+              <div style="margin-top:6px;background:#f0fdf4;border:1px solid #bbf7d0;
+                          border-radius:7px;padding:7px 10px;font-size:12px;color:#15803d">
+                <strong>&#x2139; Nota:</strong> <%= doc.observacion_doc %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- ESTADO + ACCION -->
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0">
+            <% if (doc.estado === 'Aprobado') { %>
+              <span class="badge badge-green">&#x2713; Aprobado</span>
+            <% } else if (doc.estado === 'Rechazado') { %>
+              <span class="badge badge-red">&#x2717; Rechazado</span>
+            <% } else { %>
+              <span class="badge badge-yellow">&#x23F3; Pendiente</span>
+            <% } %>
+            <a href="/estudiante/documentos/<%= doc.id %>/descargar"
+               class="btn btn-sm btn-secondary">
+              &#x2B07; Descargar
+            </a>
+          </div>
+
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state" style="padding:32px">
+        &#x1F4C2; No has subido documentos aun. Sube tu primer documento arriba.
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>

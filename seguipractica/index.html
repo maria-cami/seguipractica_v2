@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeguiPráctica 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --c0:#0a0f1e;--c1:#111827;--c2:#1f2937;--c3:#374151;
+  --c4:#6b7280;--c5:#9ca3af;--c6:#d1d5db;--c7:#f3f4f6;--c8:#ffffff;
+  --teal:#0d9488;--teal2:#14b8a6;--teal3:#99f6e4;--tealbg:#042f2e;
+  --blue:#3b82f6;--bluebg:#1e3a5f;
+  --amber:#f59e0b;--amberbg:#451a03;
+  --red:#ef4444;--redbg:#450a0a;
+  --green:#22c55e;--greenbg:#052e16;
+  --purple:#a855f7;--purplebg:#2e1065;
+  --r:10px;--r2:14px;--r3:20px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+body{font-family:'Sora',sans-serif;background:var(--c0);color:var(--c8);min-height:100vh;overflow-x:hidden}
+input,select,textarea,button{font-family:'Sora',sans-serif}
+
+/* ─── SCREENS ─── */
+.screen{display:none;min-height:100vh}
+.screen.on{display:flex}
+
+/* ─── AUTH SCREEN ─── */
+#s-auth{
+  background:var(--c0);
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+#s-auth::before{
+  content:'';position:absolute;width:700px;height:700px;
+  background:radial-gradient(circle,rgba(13,148,136,.18) 0%,transparent 65%);
+  top:-200px;right:-150px;pointer-events:none;
+}
+#s-auth::after{
+  content:'';position:absolute;width:500px;height:500px;
+  background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 65%);
+  bottom:-150px;left:-100px;pointer-events:none;
+}
+.auth-wrap{
+  width:460px;position:relative;z-index:1;
+}
+.auth-brand{
+  text-align:center;margin-bottom:36px;
+}
+.auth-brand-logo{
+  width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(135deg,var(--teal),var(--blue));
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:26px;margin-bottom:14px;
+}
+.auth-brand h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.auth-brand p{font-size:13px;color:var(--c4);margin-top:4px}
+
+.auth-tabs{
+  display:flex;background:var(--c1);border-radius:var(--r2);padding:4px;
+  margin-bottom:28px;border:1px solid var(--c2);
+}
+.auth-tab{
+  flex:1;padding:10px;text-align:center;font-size:13px;font-weight:500;
+  color:var(--c4);cursor:pointer;border-radius:var(--r);
+  border:none;background:transparent;transition:all .2s;
+}
+.auth-tab.on{background:var(--c2);color:var(--c8)}
+
+.auth-panel{display:none}
+.auth-panel.on{display:block}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--c5);margin-bottom:6px;letter-spacing:.3px}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 14px;
+  background:var(--c1);border:1px solid var(--c2);
+  border-radius:var(--r);color:var(--c8);font-size:14px;
+  transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--teal);
+}
+.field select option{background:var(--c1)}
+.field textarea{resize:vertical;min-height:80px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+.role-card{
+  padding:14px 8px;border:1px solid var(--c2);border-radius:var(--r);
+  cursor:pointer;text-align:center;background:var(--c1);
+  transition:all .2s;
+}
+.role-card:hover{border-color:var(--teal)}
+.role-card.on{border-color:var(--teal);background:rgba(13,148,136,.1)}
+.role-card .ri{font-size:24px;display:block;margin-bottom:6px}
+.role-card .rn{font-size:12px;font-weight:500;color:var(--c5)}
+.role-card.on .rn{color:var(--teal2)}
+
+.btn{
+  width:100%;padding:13px;border-radius:var(--r);
+  font-size:14px;font-weight:600;cursor:pointer;border:none;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:#0b7a72}
+.btn-outline{background:transparent;color:var(--c5);border:1px solid var(--c2)}
+.btn-outline:hover{border-color:var(--c4);color:var(--c8)}
+.btn-sm{width:auto;padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-icon{width:32px;height:32px;padding:0;border-radius:8px;font-size:14px}
+.btn-red{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+.btn-red:hover{background:rgba(239,68,68,.25)}
+.btn-blue{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.btn-blue:hover{background:rgba(59,130,246,.25)}
+.btn-green{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.2)}
+.btn-green:hover{background:rgba(34,197,94,.25)}
+
+.auth-divider{display:flex;align-items:center;gap:10px;margin:20px 0;color:var(--c4);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--c2)}
+
+.auth-hint{text-align:center;font-size:12px;color:var(--c4);margin-top:16px}
+.auth-hint span{color:var(--teal2);cursor:pointer}
+
+.steps-bar{display:flex;gap:8px;margin-bottom:24px;align-items:center}
+.step-dot{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;flex-shrink:0;
+  transition:all .3s;
+}
+.step-dot.done{background:var(--teal);color:#fff}
+.step-dot.curr{background:rgba(13,148,136,.2);color:var(--teal2);border:2px solid var(--teal)}
+.step-dot.wait{background:var(--c2);color:var(--c4)}
+.step-line{flex:1;height:2px;background:var(--c2);border-radius:2px}
+.step-line.done{background:var(--teal)}
+.step-label{font-size:11px;color:var(--c4);margin-bottom:4px}
+
+.reg-steps{overflow:hidden}
+.reg-step{display:none}
+.reg-step.on{display:block}
+
+/* ─── APP ─── */
+#s-app{flex-direction:row}
+.sidebar{
+  width:240px;flex-shrink:0;background:var(--c1);
+  border-right:1px solid var(--c2);min-height:100vh;
+  display:flex;flex-direction:column;
+}
+.sb-head{padding:20px 16px 16px;border-bottom:1px solid var(--c2)}
+.sb-logo{display:flex;align-items:center;gap:10px}
+.sb-logo-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--teal),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+}
+.sb-logo-text{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sb-logo-sub{font-size:10px;color:var(--c4);margin-top:1px}
+.sb-user{
+  margin:12px 12px 0;padding:12px;border-radius:var(--r);
+  background:var(--c2);
+}
+.sb-user-role{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--teal2);margin-bottom:2px}
+.sb-user-name{font-size:13px;font-weight:500;color:var(--c8)}
+.sb-user-id{font-size:11px;color:var(--c4);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.sb-nav{flex:1;padding:16px 8px;overflow-y:auto}
+.nav-sec-lbl{
+  font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--c3);padding:0 10px;
+  margin:16px 0 6px;
+}
+.nav-sec-lbl:first-child{margin-top:0}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border-radius:var(--r);cursor:pointer;color:var(--c4);
+  font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;
+  border:none;background:transparent;width:100%;text-align:left;
+}
+.nav-item:hover{background:var(--c2);color:var(--c8)}
+.nav-item.on{background:rgba(13,148,136,.15);color:var(--teal2)}
+.nav-item .ni{font-size:15px;width:18px;text-align:center}
+.nav-badge{
+  margin-left:auto;min-width:18px;height:18px;
+  border-radius:9px;background:var(--red);
+  color:#fff;font-size:10px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+}
+.sb-foot{padding:14px 12px;border-top:1px solid var(--c2)}
+.logout-btn{
+  width:100%;padding:9px;border-radius:var(--r);
+  background:transparent;border:1px solid var(--c2);
+  color:var(--c4);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .15s;
+}
+.logout-btn:hover{border-color:var(--c3);color:var(--c8)}
+
+/* ─── MAIN ─── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{
+  height:58px;background:var(--c1);border-bottom:1px solid var(--c2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:16px;font-weight:600;letter-spacing:-.3px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.content{flex:1;overflow-y:auto;padding:24px}
+
+/* ─── PAGE ─── */
+.page{display:none}
+.page.on{display:block}
+
+/* ─── CARDS ─── */
+.card{background:var(--c1);border:1px solid var(--c2);border-radius:var(--r2)}
+.card-head{
+  padding:16px 20px;border-bottom:1px solid var(--c2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.card-body{padding:20px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px}
+.stat{
+  background:var(--c1);border:1px solid var(--c2);border-radius:var(--r2);
+  padding:18px;cursor:default;
+}
+.stat-ico{font-size:20px;margin-bottom:8px}
+.stat-lbl{font-size:11px;color:var(--c4);margin-bottom:4px;font-weight:500;letter-spacing:.3px}
+.stat-val{font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1}
+.stat-sub{font-size:11px;color:var(--c4);margin-top:4px}
+
+/* ─── BADGE ─── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.2px;white-space:nowrap}
+.b-teal{background:rgba(13,148,136,.2);color:var(--teal2)}
+.b-green{background:rgba(34,197,94,.15);color:#86efac}
+.b-amber{background:rgba(245,158,11,.15);color:#fcd34d}
+.b-red{background:rgba(239,68,68,.15);color:#fca5a5}
+.b-blue{background:rgba(59,130,246,.15);color:#93c5fd}
+.b-gray{background:var(--c2);color:var(--c5)}
+.b-purple{background:rgba(168,85,247,.15);color:#d8b4fe}
+
+/* ─── TABLE ─── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:left;padding:10px 14px;
+  background:var(--c0);color:var(--c4);
+  font-size:11px;font-weight:600;letter-spacing:.3px;
+  border-bottom:1px solid var(--c2);white-space:nowrap;
+}
+td{
+  padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);
+  color:var(--c6);vertical-align:middle;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.td-name{display:flex;align-items:center;gap:10px}
+.ava{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+}
+.ava-teal{background:rgba(13,148,136,.25);color:var(--teal2)}
+.ava-blue{background:rgba(59,130,246,.25);color:#93c5fd}
+.ava-purple{background:rgba(168,85,247,.25);color:#d8b4fe}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* ─── CHECK ─── */
+.chk{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.chk:last-child{border-bottom:none}
+.chk-l{display:flex;align-items:center;gap:10px}
+.chk-ico{font-size:15px;width:20px;text-align:center}
+.chk-lbl{font-size:13px;color:var(--c6)}
+.toggle{
+  width:40px;height:22px;border-radius:11px;border:none;
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;
+}
+.toggle::after{
+  content:'';position:absolute;width:16px;height:16px;
+  border-radius:50%;background:#fff;top:3px;left:3px;
+  transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4);
+}
+.toggle.on{background:var(--teal)}
+.toggle.off{background:var(--c3)}
+.toggle.on::after{transform:translateX(18px)}
+
+/* ─── PROGRESS ─── */
+.pbar-wrap{background:var(--c2);border-radius:6px;height:8px;overflow:hidden}
+.pbar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--teal),var(--teal2));transition:width .5s}
+
+/* ─── TIMELINE ─── */
+.tl-item{display:flex;gap:14px;padding-bottom:20px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dc{display:flex;flex-direction:column;align-items:center}
+.tl-dot{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.tl-done{background:rgba(34,197,94,.2)}
+.tl-curr{background:rgba(245,158,11,.2);animation:pulse 2s infinite}
+.tl-wait{background:var(--c2)}
+.tl-ln{width:2px;flex:1;background:var(--c2);margin:4px 0}
+.tl-body{flex:1;padding-top:4px}
+.tl-ttl{font-size:13px;font-weight:500;color:var(--c7);margin-bottom:2px}
+.tl-date{font-size:11px;color:var(--c4);font-family:'JetBrains Mono',monospace}
+.tl-note{font-size:12px;color:var(--c5);margin-top:4px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ─── MODAL ─── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.65);z-index:200;
+  align-items:center;justify-content:center;padding:20px;
+}
+.overlay.on{display:flex}
+.modal{
+  background:var(--c1);border:1px solid var(--c2);
+  border-radius:var(--r3);width:100%;max-width:600px;
+  max-height:90vh;overflow-y:auto;
+}
+.modal-head{
+  padding:20px 24px 16px;border-bottom:1px solid var(--c2);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--c1);z-index:10;
+}
+.modal-title{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.modal-x{
+  width:30px;height:30px;border-radius:8px;background:var(--c2);
+  border:none;color:var(--c5);cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-x:hover{background:var(--c3);color:var(--c8)}
+.modal-body{padding:20px 24px}
+.modal-foot{
+  padding:16px 24px;border-top:1px solid var(--c2);
+  display:flex;gap:10px;justify-content:flex-end;
+}
+.modal-foot .btn{width:auto;padding:9px 20px}
+
+/* ─── MISC ─── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+.section-lbl{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--c4);margin-bottom:12px;
+}
+.di-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.di{}.di-lbl{font-size:11px;color:var(--c4);margin-bottom:2px}
+.di-val{font-size:13px;font-weight:500;color:var(--c7)}
+.empty{
+  text-align:center;padding:48px 20px;color:var(--c4);
+}
+.empty .ei{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px}
+.alert{
+  padding:12px 16px;border-radius:var(--r);margin-bottom:14px;
+  font-size:13px;display:flex;align-items:flex-start;gap:10px;
+}
+.alert-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:#93c5fd}
+.alert-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:#fcd34d}
+.alert-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--c2);border:1px solid var(--c3);
+  border-radius:var(--r);padding:12px 18px;
+  font-size:13px;color:var(--c8);z-index:1000;
+  transform:translateY(80px);opacity:0;
+  transition:all .3s;display:flex;align-items:center;gap:8px;
+  box-shadow:var(--shadow);
+}
+.toast.show{transform:translateY(0);opacity:1}
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--c2);border:1px solid var(--c3);
+  border-radius:var(--r);padding:8px 14px;
+}
+.search-bar input{
+  background:transparent;border:none;outline:none;
+  color:var(--c8);font-size:13px;width:220px;
+}
+.search-bar input::placeholder{color:var(--c4)}
+.filter-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.sel{
+  padding:8px 12px;border-radius:var(--r);
+  background:var(--c2);border:1px solid var(--c3);
+  color:var(--c8);font-size:13px;cursor:pointer;
+}
+.sel option{background:var(--c1)}
+.tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  background:var(--c2);color:var(--c5);cursor:pointer;border:1px solid var(--c2);
+  transition:all .15s;
+}
+.tag:hover,.tag.on{background:rgba(13,148,136,.15);border-color:var(--teal);color:var(--teal2)}
+.divider{height:1px;background:var(--c2);margin:16px 0}
+.nota-inp{
+  width:80px;padding:6px 10px;border-radius:8px;
+  background:var(--c2);border:1px solid var(--c3);
+  color:var(--c8);font-size:13px;text-align:center;
+}
+.nota-inp:focus{outline:none;border-color:var(--teal)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ AUTH ═══════════════════════════ -->
+<div id="s-auth" class="screen on">
+<div class="auth-wrap">
+  <div class="auth-brand">
+    <div class="auth-brand-logo">🎓</div>
+    <h1>SeguiPráctica</h1>
+    <p>Sistema de Seguimiento de Prácticas Empresariales · 2025-1</p>
+  </div>
+
+  <div class="auth-tabs">
+    <button class="auth-tab on" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+    <button class="auth-tab" onclick="switchAuthTab('register')">Crear Cuenta</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="auth-panel on" id="panel-login">
+    <div class="field">
+      <label>ROL DE ACCESO</label>
+      <div class="role-grid">
+        <div class="role-card on" onclick="selectRole('admin',this)" data-role="admin">
+          <span class="ri">⚙️</span><span class="rn">Admin</span>
+        </div>
+        <div class="role-card" onclick="selectRole('docente',this)" data-role="docente">
+          <span class="ri">👩‍🏫</span><span class="rn">Docente</span>
+        </div>
+        <div class="role-card" onclick="selectRole('estudiante',this)" data-role="estudiante">
+          <span class="ri">👨‍🎓</span><span class="rn">Estudiante</span>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>DOCUMENTO / USUARIO</label>
+      <input type="text" id="login-user" placeholder="Número de documento" value="admin">
+    </div>
+    <div class="field">
+      <label>CONTRASEÑA</label>
+      <input type="password" id="login-pass" placeholder="Contraseña" value="1234">
+    </div>
+    <button class="btn btn-teal" onclick="doLogin()">Ingresar →</button>
+    <div class="auth-divider">accesos rápidos de prueba</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="quickLogin('admin')" style="font-size:12px">⚙️ Admin</button>
+      <button class="btn btn-outline" onclick="quickLogin('docente')" style="font-size:12px">👩‍🏫 Docente</button>
+      <button class="btn btn-outline" onclick="quickLogin('estudiante')" style="font-size:12px">👨‍🎓 Estudiante</button>
+    </div>
+    <div class="auth-hint" style="margin-top:14px">¿No tienes cuenta? <span onclick="switchAuthTab('register')">Regístrate aquí</span></div>
+  </div>
+
+  <!-- REGISTER (estudiante multi-paso) -->
+  <div class="auth-panel" id="panel-register">
+    <div class="steps-bar" id="reg-steps-bar">
+      <div class="step-dot curr" id="sdot-1">1</div>
+      <div class="step-line" id="sline-1"></div>
+      <div class="step-dot wait" id="sdot-2">2</div>
+      <div class="step-line" id="sline-2"></div>
+      <div class="step-dot wait" id="sdot-3">3</div>
+      <div class="step-line" id="sline-3"></div>
+      <div class="step-dot wait" id="sdot-4">4</div>
+    </div>
+
+    <div class="reg-steps">
+      <!-- PASO 1: Datos personales -->
+      <div class="reg-step on" id="rs-1">
+        <div class="step-label">Paso 1 de 4 — Datos Personales</div>
+        <div class="divider"></div>
+        <div class="field-row">
+          <div class="field"><label>CÉDULA *</label><input id="r-cedula" type="text" placeholder="Ej: 1023626875"></div>
+          <div class="field"><label>CÓDIGO CURSO</label><input id="r-codigo" type="text" placeholder="Ej: ADM-501"></div>
+        </div>
+        <div class="field"><label>NOMBRE COMPLETO *</label><input id="r-nombre" type="text" placeholder="APELLIDO APELLIDO NOMBRE NOMBRE"></div>
+        <div class="field-row">
+          <div class="field"><label>CORREO ELECTRÓNICO *</label><input id="r-correo" type="email" placeholder="correo@est.edu.co"></div>
+          <div class="field"><label>CELULAR *</label><input id="r-celular" type="text" placeholder="+57 300 000 0000"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>CONTRASEÑA *</label><input id="r-pass" type="password" placeholder="Mínimo 6 caracteres"></div>
+          <div class="field"><label>CONFIRMAR CONTRASEÑA *</label><input id="r-pass2" type="password" placeholder="Repite tu contraseña"></div>
+        </div>
+        <button class="btn btn-teal" onclick="regNext(2)">Siguiente →</button>
+      </div>
+
+      <!-- PASO 2: Datos empresa -->
+      <div class="reg-step" id="rs-2">
+        <div class="step-label">Paso 2 de 4 — Datos de la Empresa</div>
+        <div class="divider"></div>
+        <div class="field-row">
+          <div class="field"><label>NIT DE LA EMPRESA *</label><input id="r-nit" type="text" placeholder="890.903.938-8"></div>
+          <div class="field"><label>NOMBRE DE LA EMPRESA *</label><input id="r-empresa" type="text" placeholder="Bancolombia S.A."></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>DIRECCIÓN</label><input id="r-dir" type="text" placeholder="Cl 50 #51-66"></div>
+          <div class="field"><label>BARRIO</label><input id="r-barrio" type="text" placeholder="El Poblado"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>TELÉFONO EMPRESA</label><input id="r-tel-emp" type="text" placeholder="(604) 404-0404"></div>
+          <div class="field"><label>CLASIFICACIÓN</label>
+            <select id="r-clasificacion">
+              <option value="">Selecciona...</option>
+              <option>Grande</option><option>Mediana</option>
+              <option>Pequeña</option><option>Microempresa</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>NATURALEZA</label>
+            <select id="r-naturaleza">
+              <option value="">Selecciona...</option>
+              <option>Privada</option><option>Pública</option><option>Mixta</option>
+            </select>
+          </div>
+          <div class="field"><label>SECTOR EMPRESARIAL</label>
+            <select id="r-sector">
+              <option value="">Selecciona...</option>
+              <option>Financiero</option><option>Tecnología</option><option>Salud</option>
+              <option>Educación</option><option>Comercio</option><option>Industrial</option>
+              <option>Servicios</option><option>Alimentos</option><option>Construcción</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" onclick="regBack(1)" style="flex:1">← Atrás</button>
+          <button class="btn btn-teal" onclick="regNext(3)" style="flex:2">Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- PASO 3: Datos contrato -->
+      <div class="reg-step" id="rs-3">
+        <div class="step-label">Paso 3 de 4 — Datos del Contrato</div>
+        <div class="divider"></div>
+        <div class="field-row">
+          <div class="field"><label>CARGO / PUESTO *</label><input id="r-cargo" type="text" placeholder="Analista Jr. de Datos"></div>
+          <div class="field"><label>TIPO DE CONTRATO</label>
+            <select id="r-tipo-contrato">
+              <option value="">Selecciona...</option>
+              <option>Práctica laboral</option>
+              <option>Contrato laboral</option>
+              <option>Pasantía</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>FECHA DE INICIO *</label><input id="r-inicio" type="date"></div>
+          <div class="field"><label>FECHA DE FIN *</label><input id="r-fin" type="date"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>SALARIO / AUXILIO</label><input id="r-salario" type="text" placeholder="$1.160.000"></div>
+          <div class="field"><label>TIEMPO CON LA EMPRESA</label><input id="r-tiempo" type="text" placeholder="Ej: 6 meses"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>NOMBRE JEFE INMEDIATO</label><input id="r-jefe" type="text" placeholder="Nombre completo"></div>
+          <div class="field"><label>CORREO JEFE</label><input id="r-jefe-correo" type="email" placeholder="jefe@empresa.com"></div>
+        </div>
+        <div class="field"><label>FUNCIONES QUE DESEMPEÑA</label>
+          <textarea id="r-funciones" placeholder="Describe las principales funciones y responsabilidades de tu práctica..."></textarea>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" onclick="regBack(2)" style="flex:1">← Atrás</button>
+          <button class="btn btn-teal" onclick="regNext(4)" style="flex:2">Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- PASO 4: Seguridad social -->
+      <div class="reg-step" id="rs-4">
+        <div class="step-label">Paso 4 de 4 — Seguridad Social</div>
+        <div class="divider"></div>
+        <div class="field-row">
+          <div class="field"><label>EPS</label><input id="r-eps" type="text" placeholder="Sura, Sanitas, Compensar..."></div>
+          <div class="field"><label>¿CERTIFICADO EPS?</label>
+            <select id="r-eps-cert">
+              <option value="no">No entregado</option>
+              <option value="si">Sí, entregado</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>ARL</label><input id="r-arl" type="text" placeholder="Positiva, Sura, Colmena..."></div>
+          <div class="field"><label>¿CERTIFICADO ARL?</label>
+            <select id="r-arl-cert">
+              <option value="no">No entregado</option>
+              <option value="si">Sí, entregado</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>PERÍODO DE PRÁCTICA</label>
+            <select id="r-periodo">
+              <option>2025-1</option><option>2025-2</option><option>2024-2</option>
+            </select>
+          </div>
+          <div class="field"><label>DOCENTE RESPONSABLE</label>
+            <select id="r-docente">
+              <option value="">Selecciona docente...</option>
+              <option>Docente López</option>
+              <option>Docente Martínez</option>
+              <option>Docente Ramírez</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>OBSERVACIÓN INICIAL</label>
+          <textarea id="r-obs" placeholder="Alguna observación o nota adicional..."></textarea>
+        </div>
+        <div class="alert alert-info" style="margin-bottom:14px">
+          <span>ℹ️</span>
+          <span>Al crear tu cuenta el estado inicial será <strong>Pendiente Documentos</strong>. Tu docente actualizará el estado cuando valide tus datos.</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" onclick="regBack(3)" style="flex:1">← Atrás</button>
+          <button class="btn btn-teal" onclick="doRegister()" style="flex:2">✓ Crear mi Cuenta</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-hint" style="margin-top:14px">¿Ya tienes cuenta? <span onclick="switchAuthTab('login')">Inicia sesión</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ APP ═══════════════════════════ -->
+<div id="s-app" class="screen">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">
+        <div class="sb-logo-icon">🎓</div>
+        <div>
+          <div class="sb-logo-text">SeguiPráctica</div>
+          <div class="sb-logo-sub">2025-1</div>
+        </div>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-user-role" id="sb-role">—</div>
+      <div class="sb-user-name" id="sb-name">—</div>
+      <div class="sb-user-id" id="sb-id">—</div>
+    </div>
+    <nav class="sb-nav" id="sb-nav"></nav>
+    <div class="sb-foot">
+      <button class="logout-btn" onclick="doLogout()">← Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <span class="badge b-teal" id="topbar-period">2025-1</span>
+        <span class="badge b-gray" id="topbar-role-badge">—</span>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+<!-- Detail Modal -->
+<div class="overlay" id="mod-detail">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-head">
+      <span class="modal-title" id="mod-detail-title">Detalle</span>
+      <button class="modal-x" onclick="closeModal('mod-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="mod-detail-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('mod-detail')">Cerrar</button>
+      <button class="btn btn-teal btn-sm" onclick="saveDetail()">Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Docente Modal -->
+<div class="overlay" id="mod-add-docente">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Nuevo Docente</span>
+      <button class="modal-x" onclick="closeModal('mod-add-docente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid2">
+        <div class="field"><label>CÉDULA *</label><input id="d-cedula" type="text"></div>
+        <div class="field"><label>NOMBRE COMPLETO *</label><input id="d-nombre" type="text"></div>
+        <div class="field"><label>CORREO *</label><input id="d-correo" type="email"></div>
+        <div class="field"><label>TELÉFONO</label><input id="d-tel" type="text"></div>
+        <div class="field"><label>CONTRASEÑA *</label><input id="d-pass" type="password"></div>
+        <div class="field"><label>PROGRAMA ASIGNADO</label>
+          <select id="d-prog">
+            <option>Administración de Empresas</option>
+            <option>Ingeniería de Sistemas</option>
+            <option>Contaduría Pública</option>
+            <option>Ingeniería Industrial</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('mod-add-docente')">Cancelar</button>
+      <button class="btn btn-teal btn-sm" onclick="addDocente()">Crear Docente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA STORE (localStorage)
+// ═══════════════════════════════════════════════
+function loadData(){
+  const d = localStorage.getItem('spdata');
+  if(d) return JSON.parse(d);
+  // Default seed data
+  return {
+    usuarios: [
+      {id:'admin', cedula:'admin', nombre:'Administrador Principal', correo:'admin@uni.edu.co', pass:'1234', rol:'admin', celular:'', activo:true},
+      {id:'d1', cedula:'d001', nombre:'Docente López', correo:'lopez@uni.edu.co', pass:'1234', rol:'docente', celular:'3001234567', programa:'Administración de Empresas', activo:true},
+      {id:'d2', cedula:'d002', nombre:'Docente Martínez', correo:'martinez@uni.edu.co', pass:'1234', rol:'docente', celular:'3009876543', programa:'Ingeniería de Sistemas', activo:true},
+      {id:'d3', cedula:'d003', nombre:'Docente Ramírez', correo:'ramirez@uni.edu.co', pass:'1234', rol:'docente', celular:'3011112222', programa:'Contaduría Pública', activo:true},
+    ],
+    estudiantes: [
+      {id:'e1', cedula:'1000008313', nombre:'ACOSTA CUADROS JUAN FELIPE', correo:'jf.acosta@est.edu.co', pass:'1234', rol:'estudiante', celular:'3012345678', codigo:'ADM-501', periodo:'2025-1', docenteId:'d1',
+       empresa:{nit:'900123456-7', nombre:'EPM E.S.P.', dir:'Av El Poblado Cl 37', barrio:'El Poblado', tel:'(604)3806060', clasificacion:'Grande', naturaleza:'Pública', sector:'Servicios'},
+       contrato:{cargo:'Técnico Sistemas', tipo:'Práctica laboral', inicio:'2025-02-03', fin:'2025-07-31', salario:'$1.300.000', tiempo:'6 meses', jefe:'Carlos Ríos', jefeCorreo:'c.rios@epm.com', funciones:'Soporte técnico de plataformas internas. Análisis de incidentes TI y documentación de procesos.'},
+       segSocial:{eps:'Sura', epsCert:true, arl:'Positiva', arlCert:true},
+       seguimiento:{campus:true, matriculado:true, contratoFirmado:true, certSalud:true, arl:true, certSst:true, seg1:true, seg2:false, notaSeg1:'4.1', notaSeg2:'', obsSeg1:'Buen desempeño, cumple actividades', obsSeg2:''},
+       estado:'En Proceso', notaFinal:'', obs:'Sin observaciones', activo:true},
+
+      {id:'e2', cedula:'1023626875', nombre:'ARIAS VALENCIA SAMUEL', correo:'s.arias@est.edu.co', pass:'1234', rol:'estudiante', celular:'3123456789', codigo:'ADM-502', periodo:'2025-1', docenteId:'d1',
+       empresa:{nit:'890903938-8', nombre:'Bancolombia S.A.', dir:'Cl 50 #51-66', barrio:'Guayaquil', tel:'(604)4040404', clasificacion:'Grande', naturaleza:'Privada', sector:'Financiero'},
+       contrato:{cargo:'Analista Jr. Datos', tipo:'Práctica laboral', inicio:'2025-02-03', fin:'2025-07-31', salario:'$1.160.000', tiempo:'6 meses', jefe:'Ana Mora', jefeCorreo:'a.mora@bancolombia.com', funciones:'Apoyo en análisis y visualización de datos financieros. Elaboración de dashboards en Power BI, limpieza de datos en Python y generación de reportes para la alta gerencia.'},
+       segSocial:{eps:'Sura', epsCert:true, arl:'Positiva', arlCert:true},
+       seguimiento:{campus:true, matriculado:true, contratoFirmado:true, certSalud:true, arl:true, certSst:false, seg1:false, seg2:false, notaSeg1:'', notaSeg2:'', obsSeg1:'', obsSeg2:''},
+       estado:'En Proceso', notaFinal:'', obs:'', activo:true},
+
+      {id:'e3', cedula:'1001234567', nombre:'VARGAS MOLINA ANDRÉS', correo:'a.vargas@est.edu.co', pass:'1234', rol:'estudiante', celular:'3205556677', codigo:'ADM-501', periodo:'2025-1', docenteId:'d1',
+       empresa:{nit:'811012345-6', nombre:'Sofasa Renault', dir:'Km 4 Vía Envigado', barrio:'Envigado', tel:'(604)3501000', clasificacion:'Grande', naturaleza:'Privada', sector:'Industrial'},
+       contrato:{cargo:'Ing. Procesos Jr.', tipo:'Contrato laboral', inicio:'2025-01-20', fin:'2025-06-30', salario:'$1.500.000', tiempo:'5 meses', jefe:'Pedro Ruiz', jefeCorreo:'p.ruiz@sofasa.com', funciones:'Mejora de procesos en línea de producción, análisis de tiempos y movimientos.'},
+       segSocial:{eps:'Compensar', epsCert:false, arl:'Positiva', arlCert:true},
+       seguimiento:{campus:true, matriculado:true, contratoFirmado:true, certSalud:false, arl:true, certSst:false, seg1:false, seg2:false, notaSeg1:'', notaSeg2:'', obsSeg1:'', obsSeg2:''},
+       estado:'Pendiente Docs', notaFinal:'', obs:'Falta certificado EPS y SST', activo:true},
+
+      {id:'e4', cedula:'1000900235', nombre:'ACEVEDO TORRES MATEO', correo:'m.acevedo@est.edu.co', pass:'1234', rol:'estudiante', celular:'3187654321', codigo:'ADM-502', periodo:'2025-1', docenteId:'d2',
+       empresa:{nit:'900567890-3', nombre:'Grupo Éxito', dir:'Cl 49B #50-21', barrio:'Buenos Aires', tel:'(604)4445566', clasificacion:'Grande', naturaleza:'Privada', sector:'Comercio'},
+       contrato:{cargo:'Auxiliar Logística', tipo:'Práctica laboral', inicio:'2025-01-15', fin:'2025-06-15', salario:'$1.160.000', tiempo:'5 meses', jefe:'Lina Torres', jefeCorreo:'l.torres@exito.com', funciones:'Apoyo en operaciones logísticas del centro de distribución.'},
+       segSocial:{eps:'Salud Total', epsCert:false, arl:'Colmena', arlCert:false},
+       seguimiento:{campus:false, matriculado:false, contratoFirmado:false, certSalud:false, arl:false, certSst:false, seg1:false, seg2:false, notaSeg1:'', notaSeg2:'', obsSeg1:'', obsSeg2:''},
+       estado:'Cancelada/Perdida', notaFinal:'0', obs:'Canceló por motivos personales', activo:true},
+
+      {id:'e5', cedula:'1044567890', nombre:'BETANCUR MORALES LAURA', correo:'l.betancur@est.edu.co', pass:'1234', rol:'estudiante', celular:'3001112233', codigo:'ING-301', periodo:'2025-1', docenteId:'d2',
+       empresa:{nit:'900112233-4', nombre:'Grupo Nutresa S.A.', dir:'Cl 44A #37-96', tel:'(604)2608080', barrio:'La América', clasificacion:'Grande', naturaleza:'Privada', sector:'Alimentos'},
+       contrato:{cargo:'Analista Calidad', tipo:'Práctica laboral', inicio:'2025-01-15', fin:'2025-07-15', salario:'$1.200.000', tiempo:'6 meses', jefe:'Sandra Gil', jefeCorreo:'s.gil@nutresa.com', funciones:'Control de calidad en procesos productivos, análisis microbiológicos y fisicoquímicos.'},
+       segSocial:{eps:'Nueva EPS', epsCert:true, arl:'Sura', arlCert:true},
+       seguimiento:{campus:true, matriculado:true, contratoFirmado:true, certSalud:true, arl:true, certSst:true, seg1:true, seg2:true, notaSeg1:'4.8', notaSeg2:'5.0', obsSeg1:'Excelente desempeño', obsSeg2:'Sobresaliente, se recomienda para práctica II'},
+       estado:'Finalizada', notaFinal:'4.9', obs:'Práctica exitosa', activo:true},
+    ]
+  };
+}
+function saveData(){localStorage.setItem('spdata',JSON.stringify(DB))}
+let DB = loadData();
+let currentUser = null;
+let currentRole = 'admin';
+let loginRole = 'admin';
+let currentDetailId = null;
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function switchAuthTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('on',i===(tab==='login'?0:1)));
+  document.getElementById('panel-login').classList.toggle('on',tab==='login');
+  document.getElementById('panel-register').classList.toggle('on',tab==='register');
+}
+
+function selectRole(role, el){
+  loginRole = role;
+  document.querySelectorAll('#panel-login .role-card').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function quickLogin(role){
+  const creds = {admin:{u:'admin',p:'1234'},docente:{u:'d001',p:'1234'},estudiante:{u:'1023626875',p:'1234'}};
+  loginRole = role;
+  document.getElementById('login-user').value = creds[role].u;
+  document.getElementById('login-pass').value = creds[role].p;
+  document.querySelectorAll('#panel-login .role-card').forEach(c=>{
+    c.classList.toggle('on', c.dataset.role===role);
+  });
+  doLogin();
+}
+
+function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if(!u||!p){toast('⚠️ Completa todos los campos','warn');return;}
+
+  let user = null;
+  if(loginRole==='admin'){
+    user = DB.usuarios.find(x=>x.cedula===u && x.pass===p && x.rol==='admin');
+  } else if(loginRole==='docente'){
+    user = DB.usuarios.find(x=>x.cedula===u && x.pass===p && x.rol==='docente');
+  } else {
+    user = DB.estudiantes.find(x=>x.cedula===u && x.pass===p);
+    if(user) user.rol = 'estudiante';
+  }
+  if(!user){toast('❌ Credenciales incorrectas','danger');return;}
+  currentUser = user;
+  currentRole = user.rol;
+  launchApp();
+}
+
+// ── REGISTRO PASO A PASO ──
+let regStep = 1;
+function updateStepBar(s){
+  [1,2,3,4].forEach(i=>{
+    const dot = document.getElementById('sdot-'+i);
+    dot.className = 'step-dot '+(i<s?'done':i===s?'curr':'wait');
+    dot.textContent = i<s?'✓':i;
+    if(i<4){
+      const line = document.getElementById('sline-'+i);
+      line.className = 'step-line'+(i<s?' done':'');
+    }
+  });
+}
+function regNext(step){
+  if(!validateRegStep(regStep)) return;
+  document.getElementById('rs-'+regStep).classList.remove('on');
+  regStep = step;
+  document.getElementById('rs-'+step).classList.add('on');
+  updateStepBar(step);
+}
+function regBack(step){
+  document.getElementById('rs-'+regStep).classList.remove('on');
+  regStep = step;
+  document.getElementById('rs-'+step).classList.add('on');
+  updateStepBar(step);
+}
+function validateRegStep(s){
+  const map = {
+    1:[['r-cedula','Cédula'],['r-nombre','Nombre'],['r-correo','Correo'],['r-celular','Celular'],['r-pass','Contraseña'],['r-pass2','Confirmar contraseña']],
+    2:[['r-nit','NIT'],['r-empresa','Nombre de empresa']],
+    3:[['r-cargo','Cargo'],['r-inicio','Fecha de inicio'],['r-fin','Fecha de fin']],
+    4:[]
+  };
+  for(const [id,lbl] of (map[s]||[])){
+    const v = document.getElementById(id)?.value?.trim();
+    if(!v){toast(`⚠️ El campo "${lbl}" es obligatorio`,'warn');return false;}
+  }
+  if(s===1){
+    const p1=document.getElementById('r-pass').value;
+    const p2=document.getElementById('r-pass2').value;
+    if(p1.length<6){toast('⚠️ La contraseña debe tener al menos 6 caracteres','warn');return false;}
+    if(p1!==p2){toast('⚠️ Las contraseñas no coinciden','warn');return false;}
+    const exists = DB.estudiantes.find(e=>e.cedula===document.getElementById('r-cedula').value.trim());
+    if(exists){toast('⚠️ Ya existe un estudiante con esa cédula','warn');return false;}
+  }
+  return true;
+}
+
+function doRegister(){
+  if(!validateRegStep(4)) return;
+  const g = id => document.getElementById(id)?.value?.trim()||'';
+  const newEst = {
+    id: 'e'+Date.now(),
+    cedula: g('r-cedula'),
+    nombre: g('r-nombre').toUpperCase(),
+    correo: g('r-correo'),
+    pass: g('r-pass'),
+    rol: 'estudiante',
+    celular: g('r-celular'),
+    codigo: g('r-codigo'),
+    periodo: g('r-periodo')||'2025-1',
+    docenteId: DB.usuarios.find(u=>u.nombre===g('r-docente'))?.id || '',
+    empresa:{
+      nit:g('r-nit'), nombre:g('r-empresa'), dir:g('r-dir'),
+      barrio:g('r-barrio'), tel:g('r-tel-emp'),
+      clasificacion:g('r-clasificacion'), naturaleza:g('r-naturaleza'), sector:g('r-sector')
+    },
+    contrato:{
+      cargo:g('r-cargo'), tipo:g('r-tipo-contrato'),
+      inicio:g('r-inicio'), fin:g('r-fin'),
+      salario:g('r-salario'), tiempo:g('r-tiempo'),
+      jefe:g('r-jefe'), jefeCorreo:g('r-jefe-correo'), funciones:g('r-funciones')
+    },
+    segSocial:{
+      eps:g('r-eps'), epsCert:g('r-eps-cert')==='si',
+      arl:g('r-arl'), arlCert:g('r-arl-cert')==='si'
+    },
+    seguimiento:{
+      campus:false, matriculado:false, contratoFirmado:false,
+      certSalud:false, arl:false, certSst:false,
+      seg1:false, seg2:false,
+      notaSeg1:'', notaSeg2:'', obsSeg1:'', obsSeg2:''
+    },
+    estado:'Pendiente Docs', notaFinal:'', obs:g('r-obs'), activo:true
+  };
+  DB.estudiantes.push(newEst);
+  saveData();
+  toast('✅ Cuenta creada exitosamente. Puedes iniciar sesión.','success');
+  setTimeout(()=>{
+    switchAuthTab('login');
+    loginRole='estudiante';
+    document.querySelectorAll('#panel-login .role-card').forEach(c=>{
+      c.classList.toggle('on',c.dataset.role==='estudiante');
+    });
+    document.getElementById('login-user').value = newEst.cedula;
+    document.getElementById('login-pass').value = '';
+    regStep=1;
+    document.querySelectorAll('.reg-step').forEach((s,i)=>{s.classList.toggle('on',i===0)});
+    updateStepBar(1);
+  },2000);
+}
+
+function doLogout(){
+  currentUser=null;currentRole=null;
+  document.getElementById('s-app').classList.remove('on');
+  document.getElementById('s-auth').classList.add('on');
+}
+
+// ═══════════════════════════════════════════════
+//  APP LAUNCH
+// ═══════════════════════════════════════════════
+function launchApp(){
+  document.getElementById('s-auth').classList.remove('on');
+  document.getElementById('s-app').classList.add('on');
+  const roleLabels={admin:'Administrador',docente:'Docente',estudiante:'Estudiante'};
+  document.getElementById('sb-role').textContent = roleLabels[currentRole];
+  document.getElementById('sb-name').textContent = currentUser.nombre;
+  document.getElementById('sb-id').textContent = currentUser.cedula;
+  document.getElementById('topbar-role-badge').textContent = roleLabels[currentRole];
+  buildNav();
+  const defaults={admin:'p-admin-dash',docente:'p-doc-dash',estudiante:'p-est-practica'};
+  renderPage(defaults[currentRole]);
+}
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════
+const navDefs = {
+  admin:[
+    {sec:'General', items:[
+      {ico:'📊',txt:'Dashboard',page:'p-admin-dash'},
+      {ico:'👥',txt:'Estudiantes',page:'p-admin-est'},
+      {ico:'👩‍🏫',txt:'Docentes',page:'p-admin-doc'},
+      {ico:'🏢',txt:'Empresas',page:'p-admin-emp'},
+    ]},
+    {sec:'Sistema',items:[
+      {ico:'📈',txt:'Reportes',page:'p-admin-rep'},
+      {ico:'⚙️',txt:'Configuración',page:'p-admin-cfg'},
+    ]}
+  ],
+  docente:[
+    {sec:'Docente',items:[
+      {ico:'📊',txt:'Dashboard',page:'p-doc-dash'},
+      {ico:'👥',txt:'Mis Estudiantes',page:'p-doc-est'},
+      {ico:'📝',txt:'Registrar Seguimiento',page:'p-doc-seg'},
+    ]}
+  ],
+  estudiante:[
+    {sec:'Mi Práctica',items:[
+      {ico:'🎓',txt:'Mi Práctica',page:'p-est-practica'},
+      {ico:'📅',txt:'Historial',page:'p-est-historial'},
+      {ico:'📄',txt:'Mis Documentos',page:'p-est-docs'},
+    ]}
+  ]
+};
+const pageTitles={
+  'p-admin-dash':'Dashboard','p-admin-est':'Gestión de Estudiantes',
+  'p-admin-doc':'Gestión de Docentes','p-admin-emp':'Empresas',
+  'p-admin-rep':'Reportes','p-admin-cfg':'Configuración',
+  'p-doc-dash':'Dashboard Docente','p-doc-est':'Mis Estudiantes',
+  'p-doc-seg':'Registrar Seguimiento',
+  'p-est-practica':'Mi Práctica','p-est-historial':'Historial de mi Práctica',
+  'p-est-docs':'Mis Documentos'
+};
+
+function buildNav(){
+  const nav=document.getElementById('sb-nav');
+  nav.innerHTML='';
+  navDefs[currentRole].forEach(sec=>{
+    const lbl=document.createElement('div');
+    lbl.className='nav-sec-lbl';lbl.textContent=sec.sec;nav.appendChild(lbl);
+    sec.items.forEach(item=>{
+      const btn=document.createElement('button');
+      btn.className='nav-item';btn.dataset.page=item.page;
+      btn.innerHTML=`<span class="ni">${item.ico}</span><span>${item.txt}</span>`;
+      btn.onclick=()=>renderPage(item.page);
+      nav.appendChild(btn);
+    });
+  });
+}
+
+function setActiveNav(page){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('on',n.dataset.page===page));
+  document.getElementById('topbar-title').textContent=pageTitles[page]||page;
+}
+
+function renderPage(page){
+  setActiveNav(page);
+  const content=document.getElementById('content');
+  content.innerHTML='';
+  const renderers={
+    'p-admin-dash':renderAdminDash,'p-admin-est':renderAdminEst,
+    'p-admin-doc':renderAdminDoc,'p-admin-emp':renderAdminEmp,
+    'p-admin-rep':renderAdminRep,'p-admin-cfg':renderAdminCfg,
+    'p-doc-dash':renderDocDash,'p-doc-est':renderDocEst,'p-doc-seg':renderDocSeg,
+    'p-est-practica':renderEstPractica,'p-est-historial':renderEstHistorial,'p-est-docs':renderEstDocs,
+  };
+  if(renderers[page]) renderers[page](content);
+  else content.innerHTML=`<div class="empty"><div class="ei">🚧</div><p>Página en construcción</p></div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function statusBadge(e){
+  const m={'En Proceso':'b-teal','Finalizada':'b-green','Cancelada/Perdida':'b-red','Pendiente Docs':'b-amber'};
+  return `<span class="badge ${m[e]||'b-gray'}">${e||'—'}</span>`;
+}
+function chk(v){return v?'<span style="color:#14b8a6;font-size:15px">✓</span>':'<span style="color:#374151;font-size:15px">—</span>';}
+function ini(n){return (n||'?').split(' ').slice(0,2).map(w=>w[0]||'').join('');}
+function fmtDate(d){return d?d.split('-').reverse().join('/'):'—';}
+function docenteName(id){return DB.usuarios.find(u=>u.id===id)?.nombre||'Sin asignar';}
+function getEstProgress(e){
+  const s=e.seguimiento;
+  const fields=['campus','matriculado','contratoFirmado','certSalud','arl','certSst','seg1','seg2'];
+  const done=fields.filter(f=>s[f]).length;
+  return {done,total:fields.length,pct:Math.round(done/fields.length*100)};
+}
+function toast(msg, type='info'){
+  const t=document.getElementById('toast');
+  const colors={info:'#93c5fd',warn:'#fcd34d',danger:'#fca5a5',success:'#86efac'};
+  t.textContent=msg;t.style.color=colors[type]||colors.info;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function openModal(id){document.getElementById(id).classList.add('on');}
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — DASHBOARD
+// ═══════════════════════════════════════════════
+function renderAdminDash(el){
+  const ests=DB.estudiantes;
+  const enProceso=ests.filter(e=>e.estado==='En Proceso').length;
+  const finalizadas=ests.filter(e=>e.estado==='Finalizada').length;
+  const canceladas=ests.filter(e=>e.estado==='Cancelada/Perdida').length;
+  const pendientes=ests.filter(e=>e.estado==='Pendiente Docs').length;
+  const conSeg1=ests.filter(e=>e.seguimiento.seg1).length;
+  const conSeg2=ests.filter(e=>e.seguimiento.seg2).length;
+  const n=ests.length||1;
+
+  const alertas=ests.filter(e=>e.estado==='Pendiente Docs'||(!e.seguimiento.seg1&&e.estado==='En Proceso'));
+
+  el.innerHTML=`
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-ico">👥</div><div class="stat-lbl">TOTAL ESTUDIANTES</div><div class="stat-val">${ests.length}</div><div class="stat-sub">Periodo 2025-1</div></div>
+    <div class="stat"><div class="stat-ico">🔄</div><div class="stat-lbl">EN PROCESO</div><div class="stat-val" style="color:#14b8a6">${enProceso}</div><div class="stat-sub">${Math.round(enProceso/n*100)}% del total</div></div>
+    <div class="stat"><div class="stat-ico">✅</div><div class="stat-lbl">FINALIZADAS</div><div class="stat-val" style="color:#86efac">${finalizadas}</div><div class="stat-sub">Prácticas completadas</div></div>
+    <div class="stat"><div class="stat-ico">⏳</div><div class="stat-lbl">PENDIENTES DOCS</div><div class="stat-val" style="color:#fcd34d">${pendientes}</div><div class="stat-sub">Requieren atención</div></div>
+    <div class="stat"><div class="stat-ico">❌</div><div class="stat-lbl">CANCELADAS</div><div class="stat-val" style="color:#fca5a5">${canceladas}</div><div class="stat-sub">Perdidas o canceladas</div></div>
+    <div class="stat"><div class="stat-ico">👩‍🏫</div><div class="stat-lbl">DOCENTES ACTIVOS</div><div class="stat-val" style="color:#d8b4fe">${DB.usuarios.filter(u=>u.rol==='docente').length}</div><div class="stat-sub">Registrados en sistema</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Cumplimiento de Requisitos</span></div>
+      <div class="card-body">
+        ${[
+          ['Campus Virtual', ests.filter(e=>e.seguimiento.campus).length],
+          ['Matriculado Plataforma', ests.filter(e=>e.seguimiento.matriculado).length],
+          ['Contrato Firmado', ests.filter(e=>e.seguimiento.contratoFirmado).length],
+          ['Certificado Salud', ests.filter(e=>e.seguimiento.certSalud).length],
+          ['ARL', ests.filter(e=>e.seguimiento.arl).length],
+          ['Cert. SST-ARL', ests.filter(e=>e.seguimiento.certSst).length],
+          ['Seguimiento 1', conSeg1],
+          ['Seguimiento 2', conSeg2],
+        ].map(([lbl,cnt])=>`
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c5);margin-bottom:5px">
+              <span>${lbl}</span><span style="color:var(--c7);font-weight:500">${cnt}/${ests.length}</span>
+            </div>
+            <div class="pbar-wrap"><div class="pbar" style="width:${Math.round(cnt/n*100)}%"></div></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Alertas y Pendientes</span></div>
+      <div class="card-body" style="padding:0">
+        ${alertas.length===0?'<div class="empty"><div class="ei">✅</div><p>Sin alertas pendientes</p></div>':
+        alertas.map(e=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.05)">
+            <span style="font-size:18px">${e.estado==='Pendiente Docs'?'⚠️':'📝'}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:500;color:var(--c7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.nombre}</div>
+              <div style="font-size:11px;color:var(--c4)">${e.estado} · ${docenteName(e.docenteId)}</div>
+            </div>
+            ${statusBadge(e.estado)}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Últimos Estudiantes Registrados</span>
+      <button class="btn btn-teal btn-sm" onclick="renderPage('p-admin-est')">Ver todos</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Estudiante</th><th>Cédula</th><th>Empresa</th><th>Docente</th><th>Estado</th><th>Progreso</th></tr></thead>
+        <tbody>
+          ${[...ests].slice(-5).reverse().map(e=>{
+            const p=getEstProgress(e);
+            return `<tr>
+              <td><div class="td-name"><div class="ava ava-teal">${ini(e.nombre)}</div><span style="font-weight:500">${e.nombre}</span></div></td>
+              <td class="mono">${e.cedula}</td>
+              <td style="font-size:12px">${e.empresa.nombre}</td>
+              <td style="font-size:12px">${docenteName(e.docenteId)}</td>
+              <td>${statusBadge(e.estado)}</td>
+              <td><div style="display:flex;align-items:center;gap:8px"><div class="pbar-wrap" style="width:80px"><div class="pbar" style="width:${p.pct}%"></div></div><span style="font-size:11px;color:var(--c4)">${p.pct}%</span></div></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — ESTUDIANTES
+// ═══════════════════════════════════════════════
+function renderAdminEst(el){
+  el.innerHTML=`
+  <div class="filter-row">
+    <div class="search-bar"><span style="color:var(--c4)">🔍</span><input type="text" placeholder="Buscar por nombre o cédula..." oninput="filterAdminEst(this.value)"></div>
+    <select class="sel" onchange="filterAdminEstadoAdmin(this.value)">
+      <option value="">Todos los estados</option>
+      <option>En Proceso</option><option>Finalizada</option>
+      <option>Cancelada/Perdida</option><option>Pendiente Docs</option>
+    </select>
+    <select class="sel" id="filter-doc">
+      <option value="">Todos los docentes</option>
+      ${DB.usuarios.filter(u=>u.rol==='docente').map(d=>`<option value="${d.id}">${d.nombre}</option>`).join('')}
+    </select>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Estudiantes Registrados <span style="color:var(--c4);font-weight:400">(${DB.estudiantes.length})</span></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ESTUDIANTE</th><th>CÉDULA</th><th>EMPRESA</th><th>INICIO</th>
+            <th>CAMPUS</th><th>SOC.</th><th>EPS</th><th>ARL</th><th>SST</th>
+            <th>SEG.1</th><th>SEG.2</th><th>ESTADO</th><th>NOTA</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="admin-est-tbody">${buildEstRows(DB.estudiantes)}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function buildEstRows(list){
+  if(!list.length) return `<tr><td colspan="14"><div class="empty"><div class="ei">👥</div><p>Sin resultados</p></div></td></tr>`;
+  return list.map(e=>`
+    <tr>
+      <td><div class="td-name"><div class="ava ava-teal">${ini(e.nombre)}</div><div><div style="font-weight:500;font-size:13px">${e.nombre}</div><div style="font-size:11px;color:var(--c4)">${docenteName(e.docenteId)}</div></div></div></td>
+      <td class="mono">${e.cedula}</td>
+      <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.empresa.nombre}</td>
+      <td class="mono" style="font-size:11px">${fmtDate(e.contrato.inicio)}</td>
+      <td>${chk(e.seguimiento.campus)}</td>
+      <td>${chk(e.seguimiento.certSalud)}</td>
+      <td>${chk(e.segSocial.epsCert)}</td>
+      <td>${chk(e.segSocial.arlCert)}</td>
+      <td>${chk(e.seguimiento.certSst)}</td>
+      <td>${chk(e.seguimiento.seg1)}</td>
+      <td>${chk(e.seguimiento.seg2)}</td>
+      <td>${statusBadge(e.estado)}</td>
+      <td class="mono">${e.notaFinal||'—'}</td>
+      <td><button class="btn btn-teal btn-sm" onclick="openDetail('${e.id}')">Ver</button></td>
+    </tr>
+  `).join('');
+}
+function filterAdminEst(q){
+  const rows=DB.estudiantes.filter(e=>e.nombre.toLowerCase().includes(q.toLowerCase())||e.cedula.includes(q));
+  const tbody=document.getElementById('admin-est-tbody');
+  if(tbody) tbody.innerHTML=buildEstRows(rows);
+}
+function filterAdminEstadoAdmin(v){
+  const rows=v?DB.estudiantes.filter(e=>e.estado===v):DB.estudiantes;
+  const tbody=document.getElementById('admin-est-tbody');
+  if(tbody) tbody.innerHTML=buildEstRows(rows);
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — DOCENTES
+// ═══════════════════════════════════════════════
+function renderAdminDoc(el){
+  const docs=DB.usuarios.filter(u=>u.rol==='docente');
+  el.innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+    <button class="btn btn-teal btn-sm" onclick="openModal('mod-add-docente')">+ Nuevo Docente</button>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>DOCENTE</th><th>CÉDULA</th><th>CORREO</th><th>TELÉFONO</th><th>PROGRAMA</th><th>ESTUDIANTES</th><th></th></tr></thead>
+        <tbody id="doc-tbody">${buildDocRows(docs)}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function buildDocRows(list){
+  return list.map(d=>{
+    const cnt=DB.estudiantes.filter(e=>e.docenteId===d.id).length;
+    return `<tr>
+      <td><div class="td-name"><div class="ava ava-blue">${ini(d.nombre)}</div><span style="font-weight:500">${d.nombre}</span></div></td>
+      <td class="mono">${d.cedula}</td>
+      <td style="font-size:12px">${d.correo}</td>
+      <td style="font-size:12px">${d.celular||'—'}</td>
+      <td><span class="badge b-blue" style="font-size:11px">${d.programa||'—'}</span></td>
+      <td style="text-align:center;font-weight:600">${cnt}</td>
+      <td>
+        <button class="btn btn-red btn-sm" onclick="deleteDocente('${d.id}')">Eliminar</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function addDocente(){
+  const g=id=>document.getElementById(id)?.value?.trim()||'';
+  if(!g('d-cedula')||!g('d-nombre')||!g('d-correo')||!g('d-pass')){
+    toast('⚠️ Completa los campos obligatorios','warn');return;
+  }
+  if(DB.usuarios.find(u=>u.cedula===g('d-cedula'))){
+    toast('⚠️ Ya existe un usuario con esa cédula','warn');return;
+  }
+  DB.usuarios.push({
+    id:'d'+Date.now(),cedula:g('d-cedula'),nombre:g('d-nombre').toUpperCase(),
+    correo:g('d-correo'),pass:g('d-pass'),rol:'docente',
+    celular:g('d-tel'),programa:g('d-prog'),activo:true
+  });
+  saveData();
+  closeModal('mod-add-docente');
+  toast('✅ Docente creado correctamente','success');
+  renderPage('p-admin-doc');
+}
+function deleteDocente(id){
+  if(!confirm('¿Eliminar este docente?')) return;
+  DB.usuarios=DB.usuarios.filter(u=>u.id!==id);
+  saveData();
+  toast('✅ Docente eliminado','success');
+  renderPage('p-admin-doc');
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — EMPRESAS
+// ═══════════════════════════════════════════════
+function renderAdminEmp(el){
+  const empMap={};
+  DB.estudiantes.forEach(e=>{
+    const k=e.empresa.nit;
+    if(!empMap[k]) empMap[k]={...e.empresa,count:0};
+    empMap[k].count++;
+  });
+  const emps=Object.values(empMap);
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-head"><span class="card-title">Empresas Vinculadas <span style="color:var(--c4);font-weight:400">(${emps.length})</span></span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>NIT</th><th>EMPRESA</th><th>SECTOR</th><th>NATURALEZA</th><th>CLASIFICACIÓN</th><th>DIRECCIÓN</th><th>ESTUDIANTES</th></tr></thead>
+        <tbody>
+          ${emps.map(e=>`<tr>
+            <td class="mono" style="font-size:11px">${e.nit}</td>
+            <td style="font-weight:500">${e.nombre}</td>
+            <td><span class="badge b-blue">${e.sector||'—'}</span></td>
+            <td style="font-size:12px">${e.naturaleza||'—'}</td>
+            <td><span class="badge b-gray">${e.clasificacion||'—'}</span></td>
+            <td style="font-size:12px">${e.dir||'—'}</td>
+            <td style="text-align:center;font-weight:600">${e.count}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — REPORTES
+// ═══════════════════════════════════════════════
+function renderAdminRep(el){
+  const ests=DB.estudiantes;
+  const notas=ests.filter(e=>e.notaFinal&&parseFloat(e.notaFinal)>0).map(e=>parseFloat(e.notaFinal));
+  const prom=notas.length?Math.round(notas.reduce((a,b)=>a+b,0)/notas.length*10)/10:0;
+  el.innerHTML=`
+  <div class="stat-grid" style="margin-bottom:20px">
+    <div class="stat"><div class="stat-ico">📊</div><div class="stat-lbl">PROMEDIO NOTAS</div><div class="stat-val" style="color:#14b8a6">${prom||'—'}</div><div class="stat-sub">${notas.length} con nota final</div></div>
+    <div class="stat"><div class="stat-ico">🏢</div><div class="stat-lbl">EMPRESAS ÚNICAS</div><div class="stat-val">${new Set(ests.map(e=>e.empresa.nit)).size}</div></div>
+    <div class="stat"><div class="stat-ico">✅</div><div class="stat-lbl">TASA DE ÉXITO</div><div class="stat-val" style="color:#86efac">${Math.round(ests.filter(e=>e.estado==='Finalizada').length/(ests.length||1)*100)}%</div></div>
+    <div class="stat"><div class="stat-ico">📝</div><div class="stat-lbl">SEG. 1 REALIZADOS</div><div class="stat-val">${ests.filter(e=>e.seguimiento.seg1).length}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Exportar Datos</span></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-outline" onclick="exportCSV()">📊 Exportar Seguimiento General (CSV)</button>
+      <button class="btn btn-outline" onclick="toast('📋 Exportando estudiantes...','info')">📋 Listado de Estudiantes</button>
+      <button class="btn btn-outline" onclick="toast('🏢 Exportando empresas...','info')">🏢 Datos de Empresas</button>
+      <button class="btn btn-outline" onclick="toast('📝 Exportando contratos...','info')">📝 Datos de Contratos</button>
+    </div>
+  </div>`;
+}
+function exportCSV(){
+  const headers=['Cédula','Nombre','Empresa','Sector','Docente','Inicio','Fin','Campus','Seg.Social','EPS','ARL','Seg1','Seg2','Estado','Nota Final'];
+  const rows=DB.estudiantes.map(e=>[
+    e.cedula,e.nombre,e.empresa.nombre,e.empresa.sector,docenteName(e.docenteId),
+    e.contrato.inicio,e.contrato.fin,
+    e.seguimiento.campus?'Sí':'No',
+    e.seguimiento.certSalud?'Sí':'No',
+    e.segSocial.epsCert?'Sí':'No',
+    e.segSocial.arlCert?'Sí':'No',
+    e.seguimiento.seg1?'Sí':'No',
+    e.seguimiento.seg2?'Sí':'No',
+    e.estado,e.notaFinal||''
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='seguimiento_practicas_2025.csv';a.click();
+  toast('✅ CSV exportado','success');
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — CONFIG
+// ═══════════════════════════════════════════════
+function renderAdminCfg(el){
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-head"><span class="card-title">Configuración del Sistema</span></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="field"><label>NOMBRE INSTITUCIÓN</label><input type="text" value="Universidad — Facultad de Administración"></div>
+        <div class="field"><label>PERIODO ACTIVO</label><select><option>2025-1</option><option>2025-2</option></select></div>
+        <div class="field"><label>FECHA LÍMITE SEG. 1</label><input type="date" value="2025-04-30"></div>
+        <div class="field"><label>FECHA LÍMITE SEG. 2</label><input type="date" value="2025-06-30"></div>
+      </div>
+      <button class="btn btn-teal btn-sm" style="margin-top:14px" onclick="toast('✅ Configuración guardada','success')">Guardar Configuración</button>
+      <div class="divider"></div>
+      <div class="alert alert-warn"><span>⚠️</span><span>Las siguientes acciones son irreversibles. Úsalas con cuidado.</span></div>
+      <button class="btn btn-red btn-sm" onclick="if(confirm('¿Seguro? Esto borrará todos los datos de prueba.')){localStorage.removeItem('spdata');toast('🗑️ Datos reiniciados','danger');setTimeout(()=>location.reload(),1500)}">🗑️ Reiniciar base de datos</button>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  DOCENTE — DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDocDash(el){
+  const mis=DB.estudiantes.filter(e=>e.docenteId===currentUser.id);
+  const pen1=mis.filter(e=>!e.seguimiento.seg1&&e.estado==='En Proceso').length;
+  const pen2=mis.filter(e=>!e.seguimiento.seg2&&e.estado==='En Proceso').length;
+  const fin=mis.filter(e=>e.estado==='Finalizada').length;
+
+  el.innerHTML=`
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-ico">👥</div><div class="stat-lbl">MIS ESTUDIANTES</div><div class="stat-val">${mis.length}</div></div>
+    <div class="stat"><div class="stat-ico">📝</div><div class="stat-lbl">SEG. 1 PENDIENTES</div><div class="stat-val" style="color:#fcd34d">${pen1}</div></div>
+    <div class="stat"><div class="stat-ico">📋</div><div class="stat-lbl">SEG. 2 PENDIENTES</div><div class="stat-val" style="color:#fcd34d">${pen2}</div></div>
+    <div class="stat"><div class="stat-ico">✅</div><div class="stat-lbl">FINALIZADAS</div><div class="stat-val" style="color:#86efac">${fin}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Mis Estudiantes</span><button class="btn btn-teal btn-sm" onclick="renderPage('p-doc-est')">Ver todos</button></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>ESTUDIANTE</th><th>EMPRESA</th><th>SEG.1</th><th>SEG.2</th><th>ESTADO</th><th>NOTA FINAL</th><th></th></tr></thead>
+        <tbody>
+          ${mis.map(e=>`<tr>
+            <td><div class="td-name"><div class="ava ava-teal">${ini(e.nombre)}</div><span style="font-weight:500">${e.nombre}</span></div></td>
+            <td style="font-size:12px">${e.empresa.nombre}</td>
+            <td>${chk(e.seguimiento.seg1)}</td>
+            <td>${chk(e.seguimiento.seg2)}</td>
+            <td>${statusBadge(e.estado)}</td>
+            <td class="mono">${e.notaFinal||'—'}</td>
+            <td><button class="btn btn-teal btn-sm" onclick="openDetail('${e.id}')">Seguimiento</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  DOCENTE — MIS ESTUDIANTES
+// ═══════════════════════════════════════════════
+function renderDocEst(el){
+  const mis=DB.estudiantes.filter(e=>e.docenteId===currentUser.id);
+  el.innerHTML=`
+  <div class="filter-row">
+    <div class="search-bar"><span style="color:var(--c4)">🔍</span><input type="text" placeholder="Buscar..." oninput="filterDocEst(this.value,'doc-est-tbody')"></div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>ESTUDIANTE</th><th>CÉDULA</th><th>EMPRESA</th><th>CAMPUS</th><th>SOC.</th><th>EPS</th><th>ARL</th><th>SST</th><th>SEG.1</th><th>SEG.2</th><th>ESTADO</th><th>NOTA</th><th></th></tr></thead>
+        <tbody id="doc-est-tbody">${buildDocEstRows(mis)}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function buildDocEstRows(list){
+  return list.map(e=>`<tr>
+    <td><div class="td-name"><div class="ava ava-teal">${ini(e.nombre)}</div><span style="font-weight:500">${e.nombre}</span></div></td>
+    <td class="mono">${e.cedula}</td>
+    <td style="font-size:12px">${e.empresa.nombre}</td>
+    <td>${chk(e.seguimiento.campus)}</td>
+    <td>${chk(e.seguimiento.certSalud)}</td>
+    <td>${chk(e.segSocial.epsCert)}</td>
+    <td>${chk(e.segSocial.arlCert)}</td>
+    <td>${chk(e.seguimiento.certSst)}</td>
+    <td>${chk(e.seguimiento.seg1)}</td>
+    <td>${chk(e.seguimiento.seg2)}</td>
+    <td>${statusBadge(e.estado)}</td>
+    <td class="mono">${e.notaFinal||'—'}</td>
+    <td><button class="btn btn-teal btn-sm" onclick="openDetail('${e.id}')">Gestionar</button></td>
+  </tr>`).join('');
+}
+function filterDocEst(q,tbodyId){
+  const mis=DB.estudiantes.filter(e=>e.docenteId===currentUser.id);
+  const rows=mis.filter(e=>e.nombre.toLowerCase().includes(q.toLowerCase())||e.cedula.includes(q));
+  const tbody=document.getElementById(tbodyId);
+  if(tbody) tbody.innerHTML=buildDocEstRows(rows);
+}
+
+// ═══════════════════════════════════════════════
+//  DOCENTE — REGISTRAR SEGUIMIENTO
+// ═══════════════════════════════════════════════
+function renderDocSeg(el){
+  const mis=DB.estudiantes.filter(e=>e.docenteId===currentUser.id&&e.estado==='En Proceso');
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-head"><span class="card-title">Registrar Seguimiento</span></div>
+    <div class="card-body">
+      ${mis.length===0?'<div class="empty"><div class="ei">👥</div><p>No tienes estudiantes en proceso para registrar seguimiento</p></div>':''}
+      ${mis.length>0?`
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="field"><label>ESTUDIANTE</label>
+          <select id="seg-est" onchange="updateSegForm()">
+            ${mis.map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>TIPO DE SEGUIMIENTO</label>
+          <select id="seg-tipo">
+            <option value="1">Seguimiento 1</option>
+            <option value="2">Seguimiento 2</option>
+          </select>
+        </div>
+        <div class="field"><label>FECHA</label><input type="date" id="seg-fecha" value="${new Date().toISOString().split('T')[0]}"></div>
+        <div class="field"><label>NOTA (0.0 - 5.0)</label><input type="number" id="seg-nota" min="0" max="5" step="0.1" placeholder="Ej: 4.2"></div>
+        <div class="field full"><label>OBSERVACIONES</label><textarea id="seg-obs" placeholder="Escribe las observaciones del seguimiento..."></textarea></div>
+        <div class="field"><label>ESTADO ACTUAL</label>
+          <select id="seg-estado">
+            <option>En Proceso</option><option>Finalizada</option>
+            <option>Cancelada/Perdida</option><option>Pendiente Docs</option>
+          </select>
+        </div>
+        <div class="field"><label>NOTA FINAL (solo si finaliza)</label><input type="number" id="seg-nota-final" min="0" max="5" step="0.1" placeholder="Opcional"></div>
+      </div>
+      <div id="seg-checkboxes" style="margin-bottom:16px"></div>
+      <button class="btn btn-teal" style="width:auto;padding:10px 28px" onclick="guardarSeguimiento()">✓ Guardar Seguimiento</button>
+      `:''}
+    </div>
+  </div>`;
+  if(mis.length) updateSegForm();
+}
+function updateSegForm(){
+  const id=document.getElementById('seg-est')?.value;
+  const e=DB.estudiantes.find(x=>x.id===id);
+  if(!e) return;
+  const s=e.seguimiento;
+  const checks=[
+    {k:'campus',l:'Campus Virtual'},
+    {k:'matriculado',l:'Matriculado en Plataforma'},
+    {k:'contratoFirmado',l:'Contrato Firmado'},
+    {k:'certSalud',l:'Certificado Salud'},
+    {k:'arl',l:'ARL Afiliación'},
+    {k:'certSst',l:'Cert. Inducción SST-ARL'},
+  ];
+  document.getElementById('seg-checkboxes').innerHTML=`
+    <div class="section-lbl">REQUISITOS DE CUMPLIMIENTO</div>
+    ${checks.map(c=>`
+      <div class="chk">
+        <div class="chk-l"><span class="chk-ico">📋</span><span class="chk-lbl">${c.l}</span></div>
+        <button class="toggle ${s[c.k]?'on':'off'}" id="seg-chk-${c.k}" onclick="toggleSegChk(this,'${c.k}')"></button>
+      </div>
+    `).join('')}
+  `;
+  document.getElementById('seg-estado').value=e.estado;
+}
+let _segOverrides={};
+function toggleSegChk(btn,key){
+  _segOverrides[key]=!(_segOverrides[key]??btn.classList.contains('on'));
+  btn.classList.toggle('on',_segOverrides[key]);
+  btn.classList.toggle('off',!_segOverrides[key]);
+}
+function guardarSeguimiento(){
+  const id=document.getElementById('seg-est')?.value;
+  const tipo=document.getElementById('seg-tipo')?.value;
+  const nota=document.getElementById('seg-nota')?.value;
+  const obs=document.getElementById('seg-obs')?.value;
+  const estado=document.getElementById('seg-estado')?.value;
+  const notaFinal=document.getElementById('seg-nota-final')?.value;
+  const e=DB.estudiantes.find(x=>x.id===id);
+  if(!e){toast('⚠️ Selecciona un estudiante','warn');return;}
+
+  // apply checklist overrides
+  ['campus','matriculado','contratoFirmado','certSalud','arl','certSst'].forEach(k=>{
+    if(k in _segOverrides) e.seguimiento[k]=_segOverrides[k];
+  });
+  _segOverrides={};
+
+  if(tipo==='1'){
+    e.seguimiento.seg1=true;
+    e.seguimiento.notaSeg1=nota;
+    e.seguimiento.obsSeg1=obs;
+  } else {
+    e.seguimiento.seg2=true;
+    e.seguimiento.notaSeg2=nota;
+    e.seguimiento.obsSeg2=obs;
+  }
+  e.estado=estado;
+  if(notaFinal) e.notaFinal=notaFinal;
+  saveData();
+  toast('✅ Seguimiento registrado correctamente','success');
+  renderPage('p-doc-seg');
+}
+
+// ═══════════════════════════════════════════════
+//  ESTUDIANTE — MI PRÁCTICA
+// ═══════════════════════════════════════════════
+function renderEstPractica(el){
+  const e=currentUser;
+  const p=getEstProgress(e);
+  const s=e.seguimiento;
+  const checks=[
+    {k:'campus',ico:'💻',l:'Campus Virtual'},
+    {k:'matriculado',ico:'📋',l:'Matriculado en Plataforma'},
+    {k:'contratoFirmado',ico:'📝',l:'Contrato Firmado'},
+    {k:'certSalud',ico:'🏥',l:'Certificado Salud'},
+    {k:'arl',ico:'🦺',l:'ARL Afiliación'},
+    {k:'certSst',ico:'🎓',l:'Cert. Inducción SST-ARL'},
+    {k:'seg1',ico:'📝',l:'Seguimiento 1'},
+    {k:'seg2',ico:'📝',l:'Seguimiento 2'},
+  ];
+  el.innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:16px">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-head">
+          <span class="card-title">Mis Datos de Práctica</span>
+          ${statusBadge(e.estado)}
+        </div>
+        <div class="card-body">
+          <div class="section-lbl">DATOS PERSONALES</div>
+          <div class="di-grid" style="margin-bottom:16px">
+            <div class="di"><div class="di-lbl">Nombre</div><div class="di-val">${e.nombre}</div></div>
+            <div class="di"><div class="di-lbl">Cédula</div><div class="di-val mono">${e.cedula}</div></div>
+            <div class="di"><div class="di-lbl">Correo</div><div class="di-val">${e.correo}</div></div>
+            <div class="di"><div class="di-lbl">Celular</div><div class="di-val">${e.celular||'—'}</div></div>
+            <div class="di"><div class="di-lbl">Periodo</div><div class="di-val">${e.periodo}</div></div>
+            <div class="di"><div class="di-lbl">Docente</div><div class="di-val">${docenteName(e.docenteId)}</div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="section-lbl">EMPRESA</div>
+          <div class="di-grid" style="margin-bottom:16px">
+            <div class="di"><div class="di-lbl">Empresa</div><div class="di-val">${e.empresa.nombre}</div></div>
+            <div class="di"><div class="di-lbl">NIT</div><div class="di-val mono">${e.empresa.nit}</div></div>
+            <div class="di"><div class="di-lbl">Sector</div><div class="di-val">${e.empresa.sector||'—'}</div></div>
+            <div class="di"><div class="di-lbl">Dirección</div><div class="di-val">${e.empresa.dir||'—'}</div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="section-lbl">CONTRATO</div>
+          <div class="di-grid" style="margin-bottom:16px">
+            <div class="di"><div class="di-lbl">Cargo</div><div class="di-val">${e.contrato.cargo}</div></div>
+            <div class="di"><div class="di-lbl">Tipo</div><div class="di-val">${e.contrato.tipo}</div></div>
+            <div class="di"><div class="di-lbl">Inicio</div><div class="di-val">${fmtDate(e.contrato.inicio)}</div></div>
+            <div class="di"><div class="di-lbl">Fin</div><div class="di-val">${fmtDate(e.contrato.fin)}</div></div>
+            <div class="di"><div class="di-lbl">Salario</div><div class="di-val">${e.contrato.salario||'—'}</div></div>
+            <div class="di"><div class="di-lbl">Jefe Inmediato</div><div class="di-val">${e.contrato.jefe||'—'}</div></div>
+          </div>
+          ${e.contrato.funciones?`<div class="divider"></div><div class="section-lbl">FUNCIONES QUE DESEMPEÑA</div><p style="font-size:13px;color:var(--c5);line-height:1.7">${e.contrato.funciones}</p>`:''}
+          ${s.notaSeg1||s.obsSeg1?`<div class="divider"></div>
+          <div class="section-lbl">SEGUIMIENTO 1</div>
+          <div class="di-grid">
+            ${s.notaSeg1?`<div class="di"><div class="di-lbl">Nota Seguimiento 1</div><div class="di-val mono" style="font-size:18px;color:#14b8a6">${s.notaSeg1}</div></div>`:''}
+            ${s.notaSeg2?`<div class="di"><div class="di-lbl">Nota Seguimiento 2</div><div class="di-val mono" style="font-size:18px;color:#14b8a6">${s.notaSeg2}</div></div>`:''}
+          </div>
+          ${s.obsSeg1?`<div style="margin-top:10px"><div class="di-lbl">Observación Docente</div><p style="font-size:13px;color:var(--c5);margin-top:4px">${s.obsSeg1}</p></div>`:''}`:''}
+          ${e.notaFinal?`<div class="divider"></div><div class="section-lbl">NOTA FINAL</div><div style="font-size:32px;font-weight:700;color:#14b8a6">${e.notaFinal}</div>`:''}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><span class="card-title">Mis Requisitos</span></div>
+        <div class="card-body">
+          ${checks.map(c=>`
+            <div class="chk">
+              <div class="chk-l"><span class="chk-ico">${c.ico}</span><span class="chk-lbl">${c.l}</span></div>
+              <button class="toggle ${s[c.k]?'on':'off'}" disabled></button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Mi Progreso</span></div>
+        <div class="card-body">
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="font-size:34px;font-weight:700;color:#14b8a6">${p.pct}%</div>
+            <div style="font-size:12px;color:var(--c4)">${p.done} de ${p.total} completados</div>
+          </div>
+          <div class="pbar-wrap" style="height:10px">
+            <div class="pbar" style="width:${p.pct}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ESTUDIANTE — HISTORIAL
+// ═══════════════════════════════════════════════
+function renderEstHistorial(el){
+  const e=currentUser;
+  const s=e.seguimiento;
+  const hitos=[
+    {done:true, ico:'📋', ttl:'Formulario de inicio registrado', date:e.contrato.inicio?new Date(e.contrato.inicio).toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}):'—', note:'Datos de empresa y contrato registrados'},
+    {done:s.campus, ico:'💻', ttl:'Matriculado en campus virtual', date:'', note:''},
+    {done:s.contratoFirmado, ico:'📝', ttl:'Contrato firmado y radicado', date:'', note:''},
+    {done:s.certSalud, ico:'🏥', ttl:'Seguridad social verificada (EPS)', date:'', note:e.segSocial.eps||''},
+    {done:s.arl, ico:'🦺', ttl:'ARL afiliación verificada', date:'', note:e.segSocial.arl||''},
+    {done:s.certSst, ico:'🎓', ttl:'Cert. inducción SST-ARL completado', date:'', note:'Curso virtual obligatorio'},
+    {done:s.seg1, ico:'📊', ttl:'Seguimiento 1 realizado', date:'', note:s.obsSeg1||'Pendiente'},
+    {done:s.seg2, ico:'📊', ttl:'Seguimiento 2 realizado', date:'', note:s.obsSeg2||'Pendiente'},
+    {done:!!e.notaFinal, ico:'🏆', ttl:'Práctica finalizada — Nota final', date:'', note:e.notaFinal?`Nota: ${e.notaFinal}`:'Pendiente'},
+  ];
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-head"><span class="card-title">Historial de mi Práctica</span>${statusBadge(e.estado)}</div>
+    <div class="card-body">
+      <div class="tl-item" style="padding-bottom:0">
+        ${hitos.map((h,i)=>`
+          <div class="tl-item">
+            <div class="tl-dc">
+              <div class="tl-dot ${h.done?'tl-done':i===hitos.findIndex(x=>!x.done)?'tl-curr':'tl-wait'}">${h.done?'✅':'⏳'}</div>
+              ${i<hitos.length-1?'<div class="tl-ln"></div>':''}
+            </div>
+            <div class="tl-body">
+              <div class="tl-ttl">${h.ico} ${h.ttl}</div>
+              ${h.date?`<div class="tl-date">${h.date}</div>`:''}
+              ${h.note?`<div class="tl-note">${h.note}</div>`:''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ESTUDIANTE — DOCUMENTOS
+// ═══════════════════════════════════════════════
+function renderEstDocs(el){
+  const e=currentUser;
+  const docs=[
+    {ico:'🏥',ttl:'Certificado EPS',sub:e.segSocial.eps||'—',done:e.segSocial.epsCert},
+    {ico:'🦺',ttl:'Certificado ARL',sub:e.segSocial.arl||'—',done:e.segSocial.arlCert},
+    {ico:'📋',ttl:'Contrato / Carta Laboral',sub:e.contrato.tipo||'—',done:e.seguimiento.contratoFirmado},
+    {ico:'🎓',ttl:'Cert. Inducción SST-ARL',sub:'Curso virtual obligatorio',done:e.seguimiento.certSst},
+    {ico:'📝',ttl:'Acta de Compromisos',sub:'Acta de inicio',done:e.seguimiento.campus},
+  ];
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-head"><span class="card-title">Estado de mis Documentos</span></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        ${docs.map(d=>`
+          <div style="border:1px solid ${d.done?'rgba(13,148,136,.3)':'rgba(245,158,11,.3)'};border-radius:var(--r2);padding:16px;background:${d.done?'rgba(13,148,136,.05)':'rgba(245,158,11,.05)'}">
+            <div style="font-size:22px;margin-bottom:8px">${d.ico}</div>
+            <div style="font-size:13px;font-weight:500;color:var(--c7);margin-bottom:2px">${d.ttl}</div>
+            <div style="font-size:11px;color:var(--c4);margin-bottom:10px">${d.sub}</div>
+            ${d.done?'<span class="badge b-green">✓ Entregado</span>':'<span class="badge b-amber">⏳ Pendiente</span>'}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  DETAIL MODAL
+// ═══════════════════════════════════════════════
+function openDetail(id){
+  const e=DB.estudiantes.find(x=>x.id===id);
+  if(!e) return;
+  currentDetailId=id;
+  document.getElementById('mod-detail-title').textContent=e.nombre;
+  const s=e.seguimiento;
+  const isAdmin=currentRole==='admin';
+  const isDocente=currentRole==='docente';
+  const canEdit=isAdmin||isDocente;
+
+  const checks=[
+    {k:'campus',l:'Campus Virtual'},
+    {k:'matriculado',l:'Matriculado en Plataforma'},
+    {k:'contratoFirmado',l:'Contrato Firmado'},
+    {k:'certSalud',l:'Certificado Salud'},
+    {k:'arl',l:'ARL Afiliación'},
+    {k:'certSst',l:'Cert. SST-ARL'},
+    {k:'seg1',l:'Seguimiento 1'},
+    {k:'seg2',l:'Seguimiento 2'},
+  ];
+
+  document.getElementById('mod-detail-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--c2)">
+      <div class="ava ava-teal" style="width:44px;height:44px;font-size:14px">${ini(e.nombre)}</div>
+      <div>
+        <div style="font-size:15px;font-weight:600">${e.nombre}</div>
+        <div class="mono" style="font-size:12px;color:var(--c4)">${e.cedula}</div>
+        <div style="font-size:12px;color:var(--c4)">${e.correo}</div>
+      </div>
+      <div style="margin-left:auto">${statusBadge(e.estado)}</div>
+    </div>
+
+    <div class="di-grid" style="margin-bottom:16px">
+      <div class="di"><div class="di-lbl">Empresa</div><div class="di-val">${e.empresa.nombre}</div></div>
+      <div class="di"><div class="di-lbl">Cargo</div><div class="di-val">${e.contrato.cargo}</div></div>
+      <div class="di"><div class="di-lbl">Inicio</div><div class="di-val">${fmtDate(e.contrato.inicio)}</div></div>
+      <div class="di"><div class="di-lbl">Fin</div><div class="di-val">${fmtDate(e.contrato.fin)}</div></div>
+      <div class="di"><div class="di-lbl">Tipo contrato</div><div class="di-val">${e.contrato.tipo}</div></div>
+      <div class="di"><div class="di-lbl">Docente</div><div class="di-val">${docenteName(e.docenteId)}</div></div>
+      <div class="di"><div class="di-lbl">EPS</div><div class="di-val">${e.segSocial.eps||'—'}</div></div>
+      <div class="di"><div class="di-lbl">ARL</div><div class="di-val">${e.segSocial.arl||'—'}</div></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-lbl">REQUISITOS DE CUMPLIMIENTO</div>
+    ${checks.map(c=>`
+      <div class="chk">
+        <span class="chk-lbl">${c.l}</span>
+        <button class="toggle ${s[c.k]?'on':'off'}" ${canEdit?`onclick="toggleDetailChk(this,'${c.k}')"`:''} ${!canEdit?'disabled':''}></button>
+      </div>
+    `).join('')}
+
+    ${canEdit?`
+    <div class="divider"></div>
+    <div class="grid2">
+      <div class="field"><label>ESTADO</label>
+        <select id="det-estado">
+          <option ${e.estado==='En Proceso'?'selected':''}>En Proceso</option>
+          <option ${e.estado==='Finalizada'?'selected':''}>Finalizada</option>
+          <option ${e.estado==='Cancelada/Perdida'?'selected':''}>Cancelada/Perdida</option>
+          <option ${e.estado==='Pendiente Docs'?'selected':''}>Pendiente Docs</option>
+        </select>
+      </div>
+      <div class="field"><label>NOTA FINAL</label>
+        <input type="number" id="det-nota" min="0" max="5" step="0.1" value="${e.notaFinal||''}" placeholder="0.0 - 5.0">
+      </div>
+      <div class="field full"><label>NOTA SEGUIMIENTO 1</label>
+        <input type="number" id="det-nota1" min="0" max="5" step="0.1" value="${s.notaSeg1||''}" placeholder="0.0 - 5.0">
+      </div>
+      <div class="field full"><label>OBSERVACIÓN SEG. 1</label>
+        <textarea id="det-obs1" placeholder="Observaciones del seguimiento 1...">${s.obsSeg1||''}</textarea>
+      </div>
+      <div class="field full"><label>NOTA SEGUIMIENTO 2</label>
+        <input type="number" id="det-nota2" min="0" max="5" step="0.1" value="${s.notaSeg2||''}" placeholder="0.0 - 5.0">
+      </div>
+      <div class="field full"><label>OBSERVACIÓN SEG. 2</label>
+        <textarea id="det-obs2" placeholder="Observaciones del seguimiento 2...">${s.obsSeg2||''}</textarea>
+      </div>
+      <div class="field full"><label>OBSERVACIÓN GENERAL</label>
+        <textarea id="det-obs" placeholder="Observación general...">${e.obs||''}</textarea>
+      </div>
+    </div>
+    ${isAdmin?`
+    <div class="divider"></div>
+    <div class="field"><label>DOCENTE ASIGNADO</label>
+      <select id="det-docente">
+        ${DB.usuarios.filter(u=>u.rol==='docente').map(d=>`<option value="${d.id}" ${e.docenteId===d.id?'selected':''}>${d.nombre}</option>`).join('')}
+      </select>
+    </div>`:''}
+    `:''}
+  `;
+  openModal('mod-detail');
+}
+
+let _detailChecks={};
+function toggleDetailChk(btn,key){
+  _detailChecks[key]=btn.classList.contains('off');
+  btn.classList.toggle('on',_detailChecks[key]);
+  btn.classList.toggle('off',!_detailChecks[key]);
+}
+
+function saveDetail(){
+  const e=DB.estudiantes.find(x=>x.id===currentDetailId);
+  if(!e){closeModal('mod-detail');return;}
+  // apply toggles
+  Object.keys(_detailChecks).forEach(k=>e.seguimiento[k]=_detailChecks[k]);
+  _detailChecks={};
+  // apply form fields
+  const estado=document.getElementById('det-estado')?.value;
+  const nota=document.getElementById('det-nota')?.value;
+  const nota1=document.getElementById('det-nota1')?.value;
+  const nota2=document.getElementById('det-nota2')?.value;
+  const obs1=document.getElementById('det-obs1')?.value;
+  const obs2=document.getElementById('det-obs2')?.value;
+  const obs=document.getElementById('det-obs')?.value;
+  const docId=document.getElementById('det-docente')?.value;
+  if(estado) e.estado=estado;
+  if(nota!==undefined) e.notaFinal=nota;
+  if(nota1!==undefined) e.seguimiento.notaSeg1=nota1;
+  if(nota2!==undefined) e.seguimiento.notaSeg2=nota2;
+  if(obs1!==undefined) e.seguimiento.obsSeg1=obs1;
+  if(obs2!==undefined) e.seguimiento.obsSeg2=obs2;
+  if(obs!==undefined) e.obs=obs;
+  if(docId) e.docenteId=docId;
+  saveData();
+  closeModal('mod-detail');
+  toast('✅ Cambios guardados correctamente','success');
+  // refresh current page
+  const active=document.querySelector('.nav-item.on');
+  if(active?.dataset?.page) renderPage(active.dataset.page);
+}
+
+// close modal on overlay click
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);});
+});
+</script>
+</body>
+</html>

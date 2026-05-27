@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matricula Pendiente | SeguiPractica</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-screen" style="background:linear-gradient(135deg,#0b1426 0%,#1a3a6c 100%)">
+  <div style="background:#fff;border-radius:20px;padding:40px;max-width:520px;width:100%;
+              box-shadow:0 24px 64px rgba(0,0,0,.25);margin:20px">
+
+    <!-- ICONO -->
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:56px;margin-bottom:12px">&#x1F4DA;</div>
+      <h2 style="font-size:22px;font-weight:700;color:#0b1426;margin-bottom:6px">
+        Matricula Pendiente
+      </h2>
+      <p style="font-size:14px;color:#64748b;line-height:1.6">
+        Completaste exitosamente <strong><%= anterior.semestre_practica %></strong>.
+        Para continuar en la plataforma debes matricular la siguiente practica.
+      </p>
+    </div>
+
+    <!-- PRACTICA ANTERIOR -->
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;
+                padding:14px 18px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:#15803d;margin-bottom:6px;text-transform:uppercase">
+        &#x2705; Practica Completada
+      </div>
+      <div style="font-size:15px;font-weight:700;color:#0b1426"><%= anterior.semestre_practica %></div>
+      <div style="font-size:12px;color:#64748b;margin-top:3px">
+        Empresa: <%= anterior.empresa_nombre || '—' %>
+        <% if (anterior.nota_final) { %>
+          &nbsp;·&nbsp; Nota final: <strong><%= anterior.nota_final %></strong>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- PRACTICA SIGUIENTE -->
+    <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:12px;
+                padding:14px 18px;margin-bottom:24px">
+      <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:6px;text-transform:uppercase">
+        &#x23F3; Siguiente Practica Requerida
+      </div>
+      <div style="font-size:15px;font-weight:700;color:#0b1426"><%= semestre.nombre %></div>
+      <div style="font-size:12px;color:#64748b;margin-top:3px"><%= semestre.descripcion %></div>
+    </div>
+
+    <!-- PASOS -->
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;
+                padding:14px 18px;margin-bottom:24px">
+      <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;text-transform:uppercase">
+        &#x1F4CB; Pasos para matricularte
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#334155">
+          <span style="background:#2563eb;color:#fff;border-radius:50%;width:20px;height:20px;
+                       display:flex;align-items:center;justify-content:center;font-size:11px;
+                       font-weight:700;flex-shrink:0">1</span>
+          Contacta a tu coordinador academico para que te habilite en el sistema.
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#334155">
+          <span style="background:#2563eb;color:#fff;border-radius:50%;width:20px;height:20px;
+                       display:flex;align-items:center;justify-content:center;font-size:11px;
+                       font-weight:700;flex-shrink:0">2</span>
+          Una vez habilitado, ve a <strong>/verificar</strong> e ingresa tu cedula.
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#334155">
+          <span style="background:#2563eb;color:#fff;border-radius:50%;width:20px;height:20px;
+                       display:flex;align-items:center;justify-content:center;font-size:11px;
+                       font-weight:700;flex-shrink:0">3</span>
+          Completa el formulario con los datos de tu nueva empresa y sube los documentos requeridos.
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <a href="/registro-siguiente?semestre=<%= semestre.nombre %>"
+        style="flex:1;display:block;background:#2563eb;color:#fff;padding:12px;
+                border-radius:10px;font-weight:600;text-decoration:none;
+                font-size:14px;text-align:center">
+        &#x1F4DD; Matricular <%= semestre.nombre %> ahora
+      </a>
+      <form action="/logout" method="POST" style="flex:1">
+        <button type="submit"
+                style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;
+                       background:#fff;color:#64748b;font-size:14px;font-weight:600;cursor:pointer">
+          &#x2B05; Cerrar sesion
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

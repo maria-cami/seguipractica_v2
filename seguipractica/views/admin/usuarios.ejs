@@ -1,0 +1,84 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div><h2 class="page-title">Usuarios del Sistema</h2></div>
+  <button onclick="document.getElementById('modal-crear').style.display='flex'" class="btn btn-primary btn-sm">+ Crear Usuario</button>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Usuario</th><th>Cedula</th><th>Correo</th><th>Celular</th><th>Rol</th><th>Estado</th><th>Creado</th><th>Acciones</th></tr></thead>
+      <tbody>
+        <% if (usuarios.length > 0) { %>
+          <% for (var i = 0; i < usuarios.length; i++) { %>
+            <% var u = usuarios[i]; %>
+            <tr>
+              <td><div class="td-user"><div class="td-av"><%= u.nombres[0] %><%= u.apellidos[0] %></div><span class="td-name"><%= u.nombres %> <%= u.apellidos %></span></div></td>
+              <td class="mono"><%= u.cedula %></td>
+              <td class="text-sm"><%= u.email %></td>
+              <td class="text-sm"><%= u.celular || '&#x2014;' %></td>
+              <td>
+                <% if (u.role === 'admin') { %><span class="badge badge-teal">Admin</span>
+                <% } else if (u.role === 'docente') { %><span class="badge badge-blue">Docente</span>
+                <% } else { %><span class="badge badge-gray">Estudiante</span><% } %>
+              </td>
+              <td><% if (u.activo) { %><span class="badge badge-green">Activo</span><% } else { %><span class="badge badge-red">Inactivo</span><% } %></td>
+              <td class="text-sm"><%= u.creado_en ? u.creado_en.split(' ')[0] : '&#x2014;' %></td>
+              <td>
+                <% if (u.cedula !== 'admin') { %>
+                  <form action="/admin/usuarios/<%= u.id %>/toggle" method="POST" style="display:inline">
+                    <button type="submit" class="btn btn-sm <%= u.activo ? 'btn-danger' : 'btn-success' %>">
+                      <%= u.activo ? 'Desactivar' : 'Activar' %>
+                    </button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr><td colspan="8" class="empty-state">Sin usuarios</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL CREAR USUARIO -->
+<div id="modal-crear" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:520px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Crear Usuario</span>
+      <button onclick="document.getElementById('modal-crear').style.display='none'" style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form action="/admin/usuarios/crear" method="POST">
+        <div class="form-row">
+          <div class="form-group"><label>Nombres *</label><input type="text" name="nombres" class="form-control" required></div>
+          <div class="form-group"><label>Apellidos *</label><input type="text" name="apellidos" class="form-control" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Cedula *</label><input type="text" name="cedula" class="form-control" required></div>
+          <div class="form-group"><label>Correo *</label><input type="email" name="email" class="form-control" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Celular</label><input type="tel" name="celular" class="form-control"></div>
+          <div class="form-group"><label>Rol *</label>
+            <select name="role" class="form-control">
+              <option value="estudiante">Estudiante</option>
+              <option value="docente">Docente</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Contrasena *</label><input type="text" name="password" class="form-control" placeholder="Min. 6 caracteres" required></div>
+        <div style="display:flex;gap:9px;margin-top:4px">
+          <button type="submit" class="btn btn-primary">Crear Usuario</button>
+          <button type="button" onclick="document.getElementById('modal-crear').style.display='none'" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>

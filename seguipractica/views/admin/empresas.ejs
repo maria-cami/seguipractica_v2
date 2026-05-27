@@ -1,0 +1,106 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Empresas</h2>
+    <p class="page-sub">Las empresas se registran automaticamente cuando un estudiante crea su practica.</p>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F3E2;</div>
+    <div class="stat-label">Total Empresas</div>
+    <div class="stat-val"><%= empresas.length %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F465;</div>
+    <div class="stat-label">Total Estudiantes</div>
+    <div class="stat-val text-blue">
+      <%= empresas.reduce(function(a,e){ return a + e.total_estudiantes; }, 0) %>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#x1F4CA;</div>
+    <div class="stat-label">Promedio por Empresa</div>
+    <div class="stat-val text-green">
+      <%= empresas.length > 0 ? (empresas.reduce(function(a,e){ return a + e.total_estudiantes; }, 0) / empresas.length).toFixed(1) : 0 %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>NIT</th>
+          <th>Sector</th>
+          <th>Naturaleza</th>
+          <th>Clasificacion</th>
+          <th>Estudiantes</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (empresas.length > 0) { %>
+          <% for (var i = 0; i < empresas.length; i++) { %>
+            <% var emp = empresas[i]; %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:36px;height:36px;background:var(--c3);border-radius:8px;
+                              display:flex;align-items:center;justify-content:center;
+                              font-size:16px;color:#fff;flex-shrink:0">
+                    &#x1F3E2;
+                  </div>
+                  <div>
+                    <div style="font-weight:600;color:var(--c0)"><%= emp.nombre || '—' %></div>
+                    <% if (emp.direccion) { %>
+                      <div style="font-size:11px;color:var(--n400)"><%= emp.direccion %></div>
+                    <% } %>
+                  </div>
+                </div>
+              </td>
+              <td class="mono text-sm"><%= emp.nit || '—' %></td>
+              <td class="text-sm"><%= emp.sector || '—' %></td>
+              <td>
+                <% if (emp.naturaleza) { %>
+                  <span class="badge badge-gray"><%= emp.naturaleza %></span>
+                <% } else { %>
+                  <span style="color:var(--n400)">—</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (emp.clasificacion) { %>
+                  <span class="badge badge-blue"><%= emp.clasificacion %></span>
+                <% } else { %>
+                  <span style="color:var(--n400)">—</span>
+                <% } %>
+              </td>
+              <td style="text-align:center">
+                <span class="badge badge-green"><%= emp.total_estudiantes %> est.</span>
+              </td>
+              <td>
+                <a href="/admin/empresas/<%= encodeURIComponent(emp.nit) %>"
+                   class="btn btn-ghost btn-sm">
+                  Ver estudiantes
+                </a>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr>
+            <td colspan="7" class="empty-state">
+              &#x1F3E2; No hay empresas registradas aun. Se agregan automaticamente cuando un estudiante crea su practica.
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>

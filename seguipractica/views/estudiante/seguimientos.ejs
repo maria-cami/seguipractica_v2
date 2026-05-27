@@ -1,0 +1,39 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <h2 class="page-title">Mis Seguimientos</h2>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Nota</th>
+          <th>Docente</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (seguimientos.length > 0) { %>
+          <% for (var i = 0; i < seguimientos.length; i++) { %>
+            <% var s = seguimientos[i]; %>
+            <tr>
+              <td><span class="badge badge-blue"><%= s.tipo %></span></td>
+              <td class="mono"><%= s.fecha %></td>
+              <td class="mono bold"><%= s.nota || '—' %></td>
+              <td class="text-sm"><%= s.doc_n ? s.doc_n + ' ' + s.doc_a : '—' %></td>
+              <td class="text-sm"><%= s.observacion || '—' %></td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr><td colspan="5" class="empty-state">No tienes seguimientos registrados aun</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>

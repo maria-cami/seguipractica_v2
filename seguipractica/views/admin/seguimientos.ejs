@@ -1,0 +1,23 @@
+<%- include('../partials/layout-top') %>
+<div class="page-header"><h2 class="page-title">Seguimientos Registrados</h2></div>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>Estudiante</th><th>Tipo</th><th>Fecha</th><th>Nota</th><th>Docente</th><th>Observaciones</th></tr></thead>
+  <tbody>
+    <% if (seguimientos.length > 0) { %>
+      <% for (var i = 0; i < seguimientos.length; i++) { %>
+        <% var s = seguimientos[i]; %>
+        <tr>
+          <td class="td-name"><%= s.apellidos %> <%= s.nombres %></td>
+          <td><span class="badge badge-blue"><%= s.tipo %></span></td>
+          <td class="mono"><%= s.fecha %></td>
+          <td class="mono bold"><%= s.nota || '&#x2014;' %></td>
+          <td class="text-sm"><%= s.doc_n ? s.doc_n + ' ' + s.doc_a : '&#x2014;' %></td>
+          <td class="text-sm" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><%= s.observacion || '&#x2014;' %></td>
+        </tr>
+      <% } %>
+    <% } else { %>
+      <tr><td colspan="6" class="empty-state">Sin seguimientos registrados</td></tr>
+    <% } %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/layout-bottom') %>

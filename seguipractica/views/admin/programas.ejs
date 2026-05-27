@@ -1,0 +1,254 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Programas Academicos</h2>
+    <p class="page-sub">Gestion de programas y sus semestres de practica</p>
+  </div>
+  <button onclick="document.getElementById('modal-crear').style.display='flex'"
+          class="btn btn-primary btn-sm">+ Nuevo Programa</button>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Programa</th>
+          <th>Codigo</th>
+          <th>Facultad</th>
+          <th>Semestres de Practica</th>
+          <th>Estudiantes</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (programas.length > 0) { %>
+          <% for (var i = 0; i < programas.length; i++) { %>
+            <% var p = programas[i]; %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:16px">&#x1F4BB;</span>
+                  <span style="font-weight:600;color:var(--c0)"><%= p.nombre %></span>
+                </div>
+              </td>
+              <td><span class="badge badge-teal"><%= p.codigo %></span></td>
+              <td style="font-size:12px;color:var(--n600)"><%= p.facultad_nombre %></td>
+              <td>
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+                  <% var progSems = semestres.filter(function(s){ return s.programa_id === p.id; }); %>
+                  <% for (var j = 0; j < progSems.length; j++) { %>
+                    <span class="badge badge-blue"><%= progSems[j].nombre %></span>
+                  <% } %>
+                  <% if (progSems.length === 0) { %>
+                    <span style="font-size:12px;color:var(--n400)">Sin semestres</span>
+                  <% } %>
+                </div>
+              </td>
+              <td style="text-align:center;font-weight:600"><%= p.total_estudiantes %></td>
+              <td>
+                <% if (p.activo) { %>
+                  <span class="badge badge-green">Activo</span>
+                <% } else { %>
+                  <span class="badge badge-red">Inactivo</span>
+                <% } %>
+              </td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn btn-ghost btn-xs"
+                    onclick="abrirEditar(
+                      '<%= p.id %>',
+                      '<%= p.facultad_id %>',
+                      '<%= p.nombre %>',
+                      '<%= p.codigo %>',
+                      '<%= p.total_practicas %>',
+                      '<%= p.activo %>'
+                    )">
+                    Editar
+                  </button>
+                  <% if (p.total_estudiantes === 0) { %>
+                    <form action="/admin/programas/<%= p.id %>/eliminar" method="POST" style="display:inline"
+                          onsubmit="return confirm('Eliminar el programa <%= p.nombre %>?')">
+                      <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                    </form>
+                  <% } else { %>
+                    <span style="font-size:11px;color:var(--n400)">Tiene estudiantes</span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr><td colspan="7" class="empty-state">No hay programas registrados</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INFO SEMESTRES -->
+<div class="card">
+  <div class="card-header"><h3 class="card-title">&#x1F4CB; Semestres de Practica por Programa</h3></div>
+  <div class="card-body" style="padding:0">
+    <% if (programas.length > 0) { %>
+      <% for (var k = 0; k < programas.length; k++) { %>
+        <% var prog = programas[k]; %>
+        <% var progSems2 = semestres.filter(function(s){ return s.programa_id === prog.id; }); %>
+        <div style="padding:14px 18px;border-bottom:1px solid var(--n100)">
+          <div style="font-size:13px;font-weight:700;color:var(--c0);margin-bottom:8px">
+            &#x1F4BB; <%= prog.nombre %>
+            <span style="font-size:11px;font-weight:400;color:var(--n500);margin-left:8px">
+              <%= prog.facultad_nombre %>
+            </span>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <% for (var m = 0; m < progSems2.length; m++) { %>
+              <div style="background:var(--n50);border:1px solid var(--n200);border-radius:9px;padding:9px 14px;min-width:180px">
+                <div style="font-size:12px;font-weight:700;color:var(--c3);margin-bottom:2px">
+                  &#x1F4CB; <%= progSems2[m].nombre %>
+                </div>
+                <div style="font-size:11px;color:var(--n500)"><%= progSems2[m].descripcion %></div>
+              </div>
+            <% } %>
+            <% if (progSems2.length === 0) { %>
+              <span style="font-size:12px;color:var(--n400)">Sin semestres configurados</span>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state">Sin programas registrados</div>
+    <% } %>
+  </div>
+</div>
+
+<!-- MODAL CREAR -->
+<div id="modal-crear" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:520px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Nuevo Programa</span>
+      <button onclick="document.getElementById('modal-crear').style.display='none'"
+              style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form action="/admin/programas/crear" method="POST">
+        <div class="form-group">
+          <label>Facultad *</label>
+          <select name="facultad_id" class="form-control" required>
+            <option value="">-- Selecciona facultad --</option>
+            <% for (var fi = 0; fi < facultades.length; fi++) { %>
+              <option value="<%= facultades[fi].id %>"><%= facultades[fi].nombre %></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nombre del Programa *</label>
+          <input type="text" name="nombre" class="form-control" required
+                 placeholder="Ej: Tecnologia en Desarrollo de Software">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Codigo *</label>
+            <input type="text" name="codigo" class="form-control" required
+                   placeholder="Ej: TDS" style="text-transform:uppercase" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>Cantidad de Semestres de Practica *</label>
+            <select name="total_practicas" class="form-control" required>
+              <option value="">-- Selecciona --</option>
+              <option value="1">1 semestre</option>
+              <option value="2">2 semestres</option>
+              <option value="3" selected>3 semestres</option>
+              <option value="4">4 semestres</option>
+              <option value="5">5 semestres</option>
+            </select>
+          </div>
+        </div>
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:14px">
+          &#x2139; Los semestres de practica se crean automaticamente segun la cantidad seleccionada.<br>
+          Ej: 3 semestres crea: Practica I, Practica II, Practica III
+        </div>
+        <div style="display:flex;gap:9px">
+          <button type="submit" class="btn btn-primary">Crear Programa</button>
+          <button type="button" onclick="document.getElementById('modal-crear').style.display='none'"
+                  class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(11,20,38,.55);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;width:520px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22)">
+    <div style="padding:15px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700;color:#0b1426">Editar Programa</span>
+      <button onclick="document.getElementById('modal-editar').style.display='none'"
+              style="border:none;background:#f1f5f9;border-radius:7px;width:26px;height:26px;cursor:pointer">&#x2715;</button>
+    </div>
+    <div style="padding:18px 20px">
+      <form id="form-editar" method="POST">
+        <div class="form-group">
+          <label>Facultad *</label>
+          <select name="facultad_id" id="ed-fac" class="form-control" required>
+            <% for (var fi2 = 0; fi2 < facultades.length; fi2++) { %>
+              <option value="<%= facultades[fi2].id %>"><%= facultades[fi2].nombre %></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" name="nombre" id="ed-nombre" class="form-control" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Codigo *</label>
+            <input type="text" name="codigo" id="ed-codigo" class="form-control" required
+                   style="text-transform:uppercase" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>Semestres de Practica *</label>
+            <select name="total_practicas" id="ed-total" class="form-control" required>
+              <option value="1">1 semestre</option>
+              <option value="2">2 semestres</option>
+              <option value="3">3 semestres</option>
+              <option value="4">4 semestres</option>
+              <option value="5">5 semestres</option>
+            </select>
+          </div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px">
+          &#x26A0; Si cambias la cantidad de semestres, los semestres anteriores se recrearan.
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0">
+            <input type="checkbox" name="activo" id="ed-activo"
+                   style="width:15px;height:15px;accent-color:var(--c3)">
+            Programa activo
+          </label>
+        </div>
+        <div style="display:flex;gap:9px">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="button" onclick="document.getElementById('modal-editar').style.display='none'"
+                  class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirEditar(id, facId, nombre, codigo, total, activo) {
+  document.getElementById('form-editar').action   = '/admin/programas/' + id + '/editar';
+  document.getElementById('ed-fac').value         = facId;
+  document.getElementById('ed-nombre').value      = nombre;
+  document.getElementById('ed-codigo').value      = codigo;
+  document.getElementById('ed-total').value       = total;
+  document.getElementById('ed-activo').checked    = activo === '1';
+  document.getElementById('modal-editar').style.display = 'flex';
+}
+</script>
+
+<%- include('../partials/layout-bottom') %>

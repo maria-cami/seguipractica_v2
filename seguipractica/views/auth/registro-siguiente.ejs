@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= titulo %> | SeguiPractica 2025</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-screen">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-icon">&#x1F393;</div>
+      <span class="brand-name">SeguiPractica</span>
+    </div>
+    <h1 class="auth-headline">Matricular<br><span><%= semestreSeleccionado %></span></h1>
+    <p class="auth-sub">Completa los datos de tu nueva practica empresarial.</p>
+    <ul class="auth-features">
+      <li>&#x1F3E2; Paso 1: Datos de la empresa</li>
+      <li>&#x1F4C4; Paso 2: Contrato y funciones</li>
+      <li>&#x1F3E5; Paso 3: Seguridad social</li>
+    </ul>
+  </div>
+
+  <div class="auth-right" style="align-items:flex-start;padding-top:30px">
+    <div class="auth-card" style="max-width:640px;width:100%">
+
+      <% if (error_msg.length > 0) { %>
+        <div class="alert alert-error"><%= error_msg[0] %></div>
+      <% } %>
+
+      <!-- INFO ESTUDIANTE -->
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 16px;margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:4px">ESTUDIANTE</div>
+        <div style="font-size:15px;font-weight:700;color:#0b1426">
+          <%= usuario.nombres %> <%= usuario.apellidos %>
+        </div>
+        <div style="font-size:12px;color:#64748b">Cedula: <%= usuario.cedula %></div>
+      </div>
+
+      <div class="steps-bar" id="steps-bar">
+        <div class="step active" data-step="1">
+          <div class="step-num">1</div>
+          <div class="step-lbl">Empresa</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <div class="step-num">2</div>
+          <div class="step-lbl">Contrato</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <div class="step-num">3</div>
+          <div class="step-lbl">Seg. Social</div>
+        </div>
+      </div>
+
+      <form action="/registro-siguiente" method="POST" enctype="multipart/form-data" id="reg-form">
+
+        <!-- SEMESTRE Y DOCENTE (ocultos pero enviados) -->
+        <input type="hidden" name="semestre_practica" value="<%= semestreSeleccionado %>">
+
+        <!-- SELECTOR FACULTAD / PROGRAMA / SEMESTRE visible -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;text-transform:uppercase">
+            &#x1F3EB; Informacion Academica
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Facultad</label>
+              <select name="facultad_id" class="form-control" id="sel-facultad" onchange="filtrarProgramas(this.value)">
+                <option value="">-- Selecciona --</option>
+                <% for (var fi = 0; fi < facultades.length; fi++) { %>
+                  <option value="<%= facultades[fi].id %>"><%= facultades[fi].nombre %></option>
+                <% } %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Programa</label>
+              <select name="programa_id" class="form-control" id="sel-programa" onchange="filtrarSemestres(this.value)">
+                <option value="">-- Selecciona --</option>
+                <% for (var pi2 = 0; pi2 < programas.length; pi2++) { %>
+                  <option value="<%= programas[pi2].id %>" data-facultad="<%= programas[pi2].facultad_id %>">
+                    <%= programas[pi2].nombre %>
+                  </option>
+                <% } %>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Semestre de Practica</label>
+              <select name="semestre_practica" class="form-control" id="sel-semestre">
+                <option value="<%= semestreSeleccionado %>" selected><%= semestreSeleccionado %></option>
+                <% for (var si2 = 0; si2 < semestres.length; si2++) { %>
+                  <% if (semestres[si2].nombre !== semestreSeleccionado) { %>
+                    <option value="<%= semestres[si2].nombre %>" data-programa="<%= semestres[si2].programa_id %>">
+                      <%= semestres[si2].nombre %>
+                    </option>
+                  <% } %>
+                <% } %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Docente Asignado</label>
+              <select name="docente_id" class="form-control">
+                <option value="">Sin asignar</option>
+                <% for (var di2 = 0; di2 < docentes.length; di2++) { %>
+                  <option value="<%= docentes[di2].id %>">
+                    <%= docentes[di2].nombres %> <%= docentes[di2].apellidos %>
+                  </option>
+                <% } %>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 1: EMPRESA -->
+        <div class="form-step active" id="step-1">
+          <h3 class="step-title">Datos de la empresa</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>NIT *</label>
+              <input type="text" name="empresa_nit" class="form-control" placeholder="890.903.938-8"
+                     value="<%= practicaAnterior ? practicaAnterior.empresa_nit || '' : '' %>">
+            </div>
+            <div class="form-group">
+              <label>Nombre *</label>
+              <input type="text" name="empresa_nombre" class="form-control" placeholder="Razon social" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Direccion</label>
+            <input type="text" name="empresa_dir" class="form-control" placeholder="Cl 50 #51-66">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefono</label>
+              <input type="tel" name="empresa_tel" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Barrio</label>
+              <input type="text" name="empresa_barrio" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Punto de Referencia</label>
+            <input type="text" name="empresa_pref" class="form-control">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Clasificacion</label>
+              <select name="empresa_clasif" class="form-control">
+                <option>Grande</option><option>Mediana</option><option>Pequena</option><option>Microempresa</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Naturaleza</label>
+              <select name="empresa_naturaleza" class="form-control">
+                <option>Privada</option><option>Publica</option><option>Mixta</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Sector</label>
+            <select name="empresa_sector" class="form-control">
+              <option>Tecnologia</option><option>Financiero</option><option>Salud</option>
+              <option>Educacion</option><option>Comercio</option><option>Industrial</option>
+              <option>Servicios</option><option>Otro</option>
+            </select>
+          </div>
+          <h4 class="subsection-title">Jefe / Supervisor</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre Completo</label>
+              <input type="text" name="jefe_nombre" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Correo</label>
+              <input type="email" name="jefe_email" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefono</label>
+              <input type="tel" name="jefe_telefono" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Celular</label>
+              <input type="tel" name="jefe_celular" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 2: CONTRATO -->
+        <div class="form-step" id="step-2">
+          <h3 class="step-title">Contrato y funciones</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cargo</label>
+              <input type="text" name="cargo" class="form-control" placeholder="Ej: Analista Jr.">
+            </div>
+            <div class="form-group">
+              <label>Tipo de Contrato</label>
+              <select name="tipo_contrato" class="form-control">
+                <option>Practica laboral</option><option>Contrato laboral</option>
+                <option>Pasantia</option><option>Voluntariado</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Contrato Laboral</label>
+            <input type="text" name="carta_laboral" class="form-control" placeholder="N. de contrato" style="margin-bottom:8px">
+            <div style="border:2px dashed #cbd5e1;border-radius:10px;padding:16px;text-align:center;background:#f8fafc;cursor:pointer;position:relative">
+              <input type="file" name="archivo_contrato" accept=".pdf,.jpg,.jpeg,.png"
+                     style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"
+                     onchange="mostrarArchivo(this,'contrato')">
+              <div id="contrato-placeholder">
+                <div style="font-size:22px;margin-bottom:5px">&#x1F4C4;</div>
+                <div style="font-size:13px;font-weight:600;color:#475569">Subir contrato</div>
+                <div style="font-size:11px;color:#94a3b8">PDF, JPG o PNG — max. 5MB</div>
+              </div>
+              <div id="contrato-preview" style="display:none;align-items:center;gap:10px;padding:4px">
+                <span style="font-size:20px">&#x1F4C4;</span>
+                <div style="text-align:left">
+                  <div id="contrato-nombre" style="font-size:13px;font-weight:600;color:#334155"></div>
+                  <div id="contrato-tamano" style="font-size:11px;color:#94a3b8"></div>
+                </div>
+                <span style="margin-left:auto;color:#10b981;font-size:18px;font-weight:700">&#x2713;</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Funcion</label>
+            <textarea name="funcion" class="form-control" rows="3" placeholder="Actividades que realizas..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tiempo en la Empresa</label>
+              <input type="text" name="tiempo_empresa" class="form-control" placeholder="Ej: 2 meses">
+            </div>
+            <div class="form-group">
+              <label>Salario</label>
+              <input type="text" name="salario" class="form-control" placeholder="1160000">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha Inicio *</label>
+              <input type="date" name="fecha_inicio" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Fecha Fin *</label>
+              <input type="date" name="fecha_fin" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Desarrollo</label>
+            <textarea name="desarrollo" class="form-control" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- PASO 3: SEGURIDAD SOCIAL -->
+        <div class="form-step" id="step-3">
+          <h3 class="step-title">Seguridad Social</h3>
+          <h4 class="subsection-title">EPS</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>EPS</label>
+              <input type="text" name="eps" class="form-control" placeholder="Sura, Sanitas...">
+            </div>
+            <div class="form-group">
+              <label>Certificado EPS</label>
+              <div class="checkbox-group" style="margin-bottom:8px">
+                <input type="checkbox" name="eps_cert" id="eps_cert">
+                <label for="eps_cert">Ya entregue el certificado</label>
+              </div>
+              <div style="border:2px dashed #cbd5e1;border-radius:10px;padding:12px;text-align:center;background:#f8fafc;cursor:pointer;position:relative">
+                <input type="file" name="archivo_eps" accept=".pdf,.jpg,.jpeg,.png"
+                       style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"
+                       onchange="mostrarArchivo(this,'eps')">
+                <div id="eps-placeholder">
+                  <div style="font-size:20px">&#x1F48A;</div>
+                  <div style="font-size:12px;font-weight:600;color:#475569">Subir cert. EPS</div>
+                </div>
+                <div id="eps-preview" style="display:none;align-items:center;gap:8px;padding:4px">
+                  <span>&#x1F4C4;</span>
+                  <div id="eps-nombre" style="font-size:12px;font-weight:600;color:#334155"></div>
+                  <span style="margin-left:auto;color:#10b981">&#x2713;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h4 class="subsection-title">ARL</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>ARL</label>
+              <input type="text" name="arl" class="form-control" placeholder="Positiva, Sura...">
+            </div>
+            <div class="form-group">
+              <label>Certificado ARL</label>
+              <div class="checkbox-group" style="margin-bottom:8px">
+                <input type="checkbox" name="arl_cert" id="arl_cert">
+                <label for="arl_cert">Ya entregue el certificado</label>
+              </div>
+              <div style="border:2px dashed #cbd5e1;border-radius:10px;padding:12px;text-align:center;background:#f8fafc;cursor:pointer;position:relative">
+                <input type="file" name="archivo_arl" accept=".pdf,.jpg,.jpeg,.png"
+                       style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"
+                       onchange="mostrarArchivo(this,'arl')">
+                <div id="arl-placeholder">
+                  <div style="font-size:20px">&#x1F9BA;</div>
+                  <div style="font-size:12px;font-weight:600;color:#475569">Subir cert. ARL</div>
+                </div>
+                <div id="arl-preview" style="display:none;align-items:center;gap:8px;padding:4px">
+                  <span>&#x1F4C4;</span>
+                  <div id="arl-nombre" style="font-size:12px;font-weight:600;color:#334155"></div>
+                  <span style="margin-left:auto;color:#10b981">&#x2713;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="final-note">
+            Al hacer clic en <strong>Matricular</strong> confirmas que los datos son correctos.
+          </div>
+        </div>
+
+        <!-- NAVEGACION -->
+        <div class="step-nav">
+          <button type="button" class="btn btn-secondary" id="btn-prev" onclick="stepPrev()" style="display:none">
+            &#x2190; Anterior
+          </button>
+          <span class="step-counter" id="step-counter">Paso 1 de 3</span>
+          <button type="button" class="btn btn-primary" id="btn-next" onclick="stepNext()">
+            Siguiente &#x2192;
+          </button>
+          <button type="submit" class="btn btn-success" id="btn-submit" style="display:none">
+            &#x2713; Matricular Practica
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentStep = 1;
+var totalSteps  = 3;
+
+function stepNext() {
+  if (currentStep < totalSteps) {
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    document.querySelectorAll('.step')[currentStep - 1].classList.add('done');
+    document.querySelectorAll('.step')[currentStep - 1].classList.remove('active');
+    currentStep++;
+    document.getElementById('step-' + currentStep).classList.add('active');
+    document.querySelectorAll('.step')[currentStep - 1].classList.add('active');
+    updateNav();
+  }
+}
+
+function stepPrev() {
+  if (currentStep > 1) {
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    document.querySelectorAll('.step')[currentStep - 1].classList.remove('active');
+    currentStep--;
+    document.getElementById('step-' + currentStep).classList.add('active');
+    document.querySelectorAll('.step')[currentStep - 1].classList.add('active');
+    document.querySelectorAll('.step')[currentStep - 1].classList.remove('done');
+    updateNav();
+  }
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').style.display   = currentStep > 1 ? '' : 'none';
+  document.getElementById('btn-next').style.display   = currentStep < totalSteps ? '' : 'none';
+  document.getElementById('btn-submit').style.display = currentStep === totalSteps ? '' : 'none';
+  document.getElementById('step-counter').textContent = 'Paso ' + currentStep + ' de ' + totalSteps;
+}
+
+function filtrarProgramas(facultadId) {
+  var opts = document.querySelectorAll('#sel-programa option');
+  opts.forEach(function(o) {
+    if (!o.value) return;
+    o.style.display = o.dataset.facultad === facultadId ? '' : 'none';
+  });
+  document.getElementById('sel-programa').value = '';
+}
+
+function mostrarArchivo(input, tipo) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) { alert('Maximo 5 MB.'); input.value = ''; return; }
+  var sz = file.size > 1048576 ? (file.size/1048576).toFixed(1)+' MB' : (file.size/1024).toFixed(0)+' KB';
+  document.getElementById(tipo+'-placeholder').style.display = 'none';
+  document.getElementById(tipo+'-preview').style.display     = 'flex';
+  document.getElementById(tipo+'-nombre').textContent        = file.name;
+  if (document.getElementById(tipo+'-tamano')) document.getElementById(tipo+'-tamano').textContent = sz;
+}
+</script>
+
+</body>
+</html>

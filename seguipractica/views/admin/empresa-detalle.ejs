@@ -1,0 +1,163 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">&#x1F3E2; <%= empresa.nombre %></h2>
+    <p class="page-sub">NIT: <%= empresa.nit %> — <%= empresa.total_estudiantes %> estudiante(s) vinculado(s)</p>
+  </div>
+  <a href="/admin/empresas" class="btn btn-secondary btn-sm">&#x2190; Volver</a>
+</div>
+
+<div class="grid-2" style="margin-bottom:18px">
+
+  <!-- DATOS DE LA EMPRESA -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Informacion de la Empresa</h3></div>
+    <div class="card-body">
+      <div class="detail-grid">
+        <div>
+          <div class="detail-label">Razon Social</div>
+          <div class="detail-value"><%= empresa.nombre || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">NIT</div>
+          <div class="detail-value mono"><%= empresa.nit || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">Direccion</div>
+          <div class="detail-value"><%= empresa.direccion || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">Telefono</div>
+          <div class="detail-value"><%= empresa.telefono || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">Barrio</div>
+          <div class="detail-value"><%= empresa.barrio || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">Sector</div>
+          <div class="detail-value"><%= empresa.sector || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">Naturaleza</div>
+          <div class="detail-value"><%= empresa.naturaleza || '—' %></div>
+        </div>
+        <div>
+          <div class="detail-label">Clasificacion</div>
+          <div class="detail-value"><%= empresa.clasificacion || '—' %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Resumen</h3></div>
+    <div class="card-body">
+      <% var enProceso = estudiantes.filter(function(e){ return e.estado === 'En Proceso'; }).length; %>
+      <% var finaliz   = estudiantes.filter(function(e){ return e.estado === 'Finalizada'; }).length; %>
+      <% var pendDocs  = estudiantes.filter(function(e){ return e.estado === 'Pendiente Docs'; }).length; %>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:10px 14px;background:var(--n50);border-radius:9px">
+          <span style="font-size:13px;color:var(--n600)">Total estudiantes</span>
+          <span style="font-size:18px;font-weight:700;color:var(--c0)"><%= estudiantes.length %></span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:10px 14px;background:#dbeafe;border-radius:9px">
+          <span style="font-size:13px;color:#1e40af">En Proceso</span>
+          <span style="font-size:18px;font-weight:700;color:#1e40af"><%= enProceso %></span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:10px 14px;background:#dcfce7;border-radius:9px">
+          <span style="font-size:13px;color:#15803d">Finalizados</span>
+          <span style="font-size:18px;font-weight:700;color:#15803d"><%= finaliz %></span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:10px 14px;background:#fef9c3;border-radius:9px">
+          <span style="font-size:13px;color:#92400e">Pend. Docs</span>
+          <span style="font-size:18px;font-weight:700;color:#92400e"><%= pendDocs %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTUDIANTES DE LA EMPRESA -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">&#x1F465; Estudiantes en esta Empresa</h3>
+    <span class="badge badge-blue"><%= estudiantes.length %> registros</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Cedula</th>
+          <th>Cargo</th>
+          <th>Semestre</th>
+          <th>Docente</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
+          <th>Estado</th>
+          <th>Nota</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (estudiantes.length > 0) { %>
+          <% for (var i = 0; i < estudiantes.length; i++) { %>
+            <% var est = estudiantes[i]; %>
+            <tr>
+              <td>
+                <div class="td-user">
+                  <div class="td-av"><%= est.nombres[0] %><%= est.apellidos[0] %></div>
+                  <div>
+                    <div class="td-name"><%= est.apellidos %> <%= est.nombres %></div>
+                    <div class="td-sub"><%= est.email %></div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono"><%= est.cedula %></td>
+              <td class="text-sm"><%= est.cargo || '—' %></td>
+              <td>
+                <% if (est.semestre_practica) { %>
+                  <span class="badge badge-blue"><%= est.semestre_practica %></span>
+                <% } else { %>
+                  <span style="color:var(--n400)">—</span>
+                <% } %>
+              </td>
+              <td class="text-sm">
+                <%= est.doc_nombres ? est.doc_nombres + ' ' + est.doc_apellidos : '—' %>
+              </td>
+              <td class="mono text-sm"><%= est.fecha_inicio || '—' %></td>
+              <td class="mono text-sm"><%= est.fecha_fin || '—' %></td>
+              <td>
+                <span class="badge
+                  <%= est.estado === 'Finalizada'     ? 'badge-green'  :
+                      est.estado === 'En Proceso'     ? 'badge-blue'   :
+                      est.estado === 'Pendiente Docs' ? 'badge-yellow' : 'badge-red' %>">
+                  <%= est.estado %>
+                </span>
+              </td>
+              <td class="mono bold"><%= est.nota_final || '—' %></td>
+              <td>
+                <a href="/admin/estudiantes/<%= est.practica_id %>"
+                   class="btn btn-ghost btn-sm">Ver</a>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr>
+            <td colspan="10" class="empty-state">Sin estudiantes registrados</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>

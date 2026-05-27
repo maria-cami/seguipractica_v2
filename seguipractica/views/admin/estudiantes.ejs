@@ -1,0 +1,109 @@
+<%- include('../partials/layout-top') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Estudiantes</h2>
+    <p class="page-sub">Gestion de practicas empresariales</p>
+  </div>
+  <div class="page-actions">
+    <a href="/admin/estudiantes?<%= new URLSearchParams({buscar, estado}).toString() %>&export=csv" class="btn btn-secondary btn-sm">
+      &#x2B07; Exportar CSV
+    </a>
+    <a href="/admin/estudiantes/crear" class="btn btn-primary btn-sm">+ Nuevo Estudiante</a>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<form method="GET" action="/admin/estudiantes" class="filter-bar">
+  <div class="search-box">
+    <span>&#x1F50D;</span>
+    <input type="text" name="buscar" value="<%= buscar %>" placeholder="Nombre, cedula, empresa...">
+  </div>
+  <select name="estado" class="form-control form-control-sm">
+    <option value="">Todos los estados</option>
+    <option value="En Proceso"       <%= estado === 'En Proceso' ? 'selected' : '' %>>En Proceso</option>
+    <option value="Finalizada"       <%= estado === 'Finalizada' ? 'selected' : '' %>>Finalizada</option>
+    <option value="Pendiente Docs"   <%= estado === 'Pendiente Docs' ? 'selected' : '' %>>Pendiente Docs</option>
+    <option value="Cancelada/Perdida" <%= estado === 'Cancelada/Perdida' ? 'selected' : '' %>>Cancelada</option>
+  </select>
+  <button type="submit" class="btn btn-secondary btn-sm">Filtrar</button>
+  <a href="/admin/estudiantes" class="btn btn-ghost btn-sm">Limpiar</a>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Cedula</th>
+          <th>Curso</th>
+          <th>Empresa</th>
+          <th>Periodo</th>
+          <th>Campus</th>
+          <th>EPS</th>
+          <th>ARL</th>
+          <th>Seg.1</th>
+          <th>Seg.2</th>
+          <th>Estado</th>
+          <th>Nota</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (estudiantes.length > 0) { %>
+          <% for (var i = 0; i < estudiantes.length; i++) { %>
+            <% var e = estudiantes[i]; %>
+            <tr>
+              <td>
+                <div class="td-user">
+                  <div class="td-av"><%= e.nombres[0] %><%= e.apellidos[0] %></div>
+                  <div>
+                    <div class="td-name"><%= e.apellidos %> <%= e.nombres %></div>
+                    <div class="td-sub">
+                      <% if (e.docente_nombres) { %>
+                        <%= e.docente_nombres %> <%= e.docente_apellidos %>
+                      <% } else { %>
+                        Sin docente
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono"><%= e.cedula %></td>
+              <td class="text-sm"><%= e.codigo_curso || '—' %></td>
+              <td class="text-sm"><%= e.empresa_nombre || '—' %></td>
+              <td><span class="badge badge-gray"><%= e.periodo || '—' %></span></td>
+              <td class="text-center"><%= e.req_campus ? '✓' : '—' %></td>
+              <td class="text-center"><%= e.req_eps_cert ? '✓' : '—' %></td>
+              <td class="text-center"><%= e.req_arl_cert ? '✓' : '—' %></td>
+              <td class="text-center"><%= e.req_seg1 ? '✓' : '—' %></td>
+              <td class="text-center"><%= e.req_seg2 ? '✓' : '—' %></td>
+              <td>
+                <% if (e.estado === 'En Proceso') { %>
+                  <span class="badge badge-blue"><%= e.estado %></span>
+                <% } else if (e.estado === 'Finalizada') { %>
+                  <span class="badge badge-green"><%= e.estado %></span>
+                <% } else if (e.estado === 'Pendiente Docs') { %>
+                  <span class="badge badge-yellow"><%= e.estado %></span>
+                <% } else { %>
+                  <span class="badge badge-red"><%= e.estado %></span>
+                <% } %>
+              </td>
+              <td class="mono bold"><%= e.nota_final || '—' %></td>
+              <td>
+                <a href="/admin/estudiantes/<%= e.practica_id %>" class="btn btn-sm btn-secondary">Ver</a>
+              </td>
+            </tr>
+          <% } %>
+        <% } else { %>
+          <tr>
+            <td colspan="13" class="empty-state">No se encontraron estudiantes</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/layout-bottom') %>
